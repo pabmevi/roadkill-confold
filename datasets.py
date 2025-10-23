@@ -69,7 +69,7 @@ def updated_extinction_birds(data_path='datasets/Extinction/Avo_Birdbase.csv'):
     return model, data
 
 def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imputations_mean.csv'):
-    attrs = ["extinction_risk","Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
+    attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
              "Foraging","MatingSystem","NestPlacement",
              "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
              "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
