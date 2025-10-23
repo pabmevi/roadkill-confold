@@ -74,7 +74,7 @@ def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imputations
              "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
              "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
              "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","ISL","LAT",
+             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","LAT",
              "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
              "Range_size","Body_mass","Clutch_size"]
     
