@@ -1,27 +1,44 @@
-import sys, os
+import sys, os, random
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../CONFOLD/'))) #add CONFOLD to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) #add the parent directory to the path
+sys.path.append(os.path.join(os.getcwd(), 'CONFOLD')) #add CONFOLD to path
 
 import numpy as np
+from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.model_selection import train_test_split
+import pandas as pd
+
 from foldrm import Classifier
 from utils import split_data # Or your stratified version if you prefer
-from datasets import new_extinction_birds # Our new function
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.metrics import accuracy_score
+
+from datasets import extinction_birds15 # Our new function
 
 # Load the data
 
 # Cargar y filtrar los datos para usar solo 0 y 1 en extinction_risk
-model_template, data = new_extinction_birds()
-label_index = model_template.attrs.index(model_template.label) if model_template.label in model_template.attrs else -1
-data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
+model_template, data = extinction_birds15()
 
-# Split into training and testing sets
-train_data, test_data = split_data(data, ratio=0.9, shuffle=True)
+X = data[model_template.numeric].values.tolist()
+y = data['extinction_risk'].values.tolist()
+
+for i in range(len(y)):
+    y[i]=str(y[i])
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y, test_size=0.2, random_state=42)
+
+baseline_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+#baseline_model = Classifier(attrs=model.numeric, numeric=model.numeric, label=model.label)
+train_data = np.concatenate((np.array(X_train), np.array(y_train).reshape(-1, 1)), axis=1).tolist()
+test_data = np.concatenate((np.array(X_test), np.array(y_test).reshape(-1, 1)), axis=1).tolist()
 
 print(f"Training set size: {len(train_data)} newextinctionbirds")
 print(f"Testing set size: {len(test_data)} newextinctionbirds")
 
-# Instantiate a new classifier for our baseline experiment
-baseline_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
 
 # Fit the model on the training data
 baseline_model.fit(train_data, ratio=0.5)
@@ -47,8 +64,8 @@ for i in range(len(Y_test)):
 accuracy = correct_predictions / len(Y_test)
 
 print("--- Baseline Model Evaluation ---")
-print(f"True Labels:    {Y_test}")
-print(f"Predicted Labels: {predicted_labels}")
+#print(f"True Labels:    {Y_test}")
+#print(f"Predicted Labels: {predicted_labels}")
 print(f"Accuracy: {accuracy * 100:.2f}%")
 
 # Instantiate a new classifier for our expert-guided model
@@ -91,14 +108,14 @@ for i in range(len(Y_test)):
 expert_accuracy = expert_correct_predictions / len(Y_test)
 
 print("--- Baseline Model Evaluation ---")
-print(f"True Labels:      {Y_test}")
-print(f"Predicted Labels: {predicted_labels}")
+#print(f"True Labels:      {Y_test}")
+#print(f"Predicted Labels: {predicted_labels}")
 print(f"Accuracy: {accuracy * 100:.2f}%\n")
 
 
 print("--- Expert Model Evaluation ---")
-print(f"True Labels:      {Y_test}")
-print(f"Predicted Labels: {expert_predicted_labels}")
+#print(f"True Labels:      {Y_test}")
+#print(f"Predicted Labels: {expert_predicted_labels}")
 print(f"Accuracy: {expert_accuracy * 100:.2f}%")
 
 # Instantiate a new classifier

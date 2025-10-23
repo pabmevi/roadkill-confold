@@ -1,6 +1,35 @@
 from foldrm import Classifier
 import numpy as np
 
+import sys, os
+sys.path.append(os.path.join(os.getcwd(), 'CONFOLD'))
+
+from ModifiedClass import MyClassifier
+import numpy as np
+import pandas as pd
+from CONFOLD.foldrm import Classifier
+
+        
+def extinction_birds15(data_path='datasets/Extinction/BirdTraits_15imputations_mean.csv'):
+    attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
+             "Foraging","MatingSystem","NestPlacement",
+             "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
+             "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
+             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
+             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","ISL","LAT",
+             "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
+             "Range_size","Body_mass","Clutch_size"]
+    
+    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
+             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
+             "Tail.Length", "Min.Latitude","Max.Latitude", "Elevational.Range", "HB", "DB",
+             "LogNightLights","LogHumanPopulationDensity", "Range_size", "Body_mass", "Clutch_size"]
+    label = "extinction_risk"
+    
+    model = MyClassifier(attrs=attrs, numeric=nums, label=label)
+    data = model.load_data(data_path)
+    return model, data
+
 def extinction_birds(data_path='datasets/Extinction/AvoIUCNbehavMig.csv'):
     attrs = ['IslandEndemic','Mass','HWI','Habitat.x','Beak.Length.culmen','Beak.Length.nares',
             'Beak.Width','Beak.Depth','Tarsus.Length','Wing.Length','Kipps.Distance','Secondary1',
@@ -72,3 +101,5 @@ def extinction_amphib(data_path='datasets/Extinction/Pottieretal2022_ampthermtol
     data = model.load_data(data_path)
     print('\n% dataset', np.shape(data))
     return model, data
+
+
