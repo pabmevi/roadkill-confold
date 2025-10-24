@@ -12,7 +12,7 @@ class MyClassifier(Classifier):
         
 
 def use_dataframe(file, attrs, label, numeric, amount):
-    df = pd.read_csv(file) #get the dataframe
+    df = pd.read_csv(file, sep=',', on_bad_lines='skip') #get the dataframe
 
     #split into x and y
     df_x = df[attrs]

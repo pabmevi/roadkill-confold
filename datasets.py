@@ -9,14 +9,58 @@ import numpy as np
 import pandas as pd
 from CONFOLD.foldrm import Classifier
 
+def ecoli():
+    attrs = ['sn','mcg','gvh','lip','chg','aac','alm1','alm2']
+    nums = ['mcg','gvh','lip','chg','aac','alm1','alm2']
+    model = MyClassifier(attrs=attrs, numeric=nums, label="label")
+    data = model.load_data('CONFOLD/data/ecoli/ecoli.csv')
+    return model, data
+
         
 def extinction_birds15(data_path='datasets/Extinction/BirdTraits_15imputations_mean.csv'):
+    #attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
+    #         "Foraging","MatingSystem","NestPlacement",
+    #         "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
+    #         "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
+    #         "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
+    #         "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","ISL","LAT",
+    #         "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
+    #         "Range_size","Body_mass","Clutch_size"]
+    
     attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
              "Foraging","MatingSystem","NestPlacement",
              "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
              "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
              "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","ISL","LAT",
+             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","LAT",
+             "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
+             "Range_size","Body_mass","Clutch_size"]
+    
+    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
+             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
+             "Tail.Length", "Min.Latitude","Max.Latitude", "Elevational.Range", "HB", "DB",
+             "LogNightLights","LogHumanPopulationDensity", "Range_size", "Body_mass", "Clutch_size"]
+    label = "extinction_risk"
+    
+    model = MyClassifier(attrs=attrs, numeric=nums, label=label)
+    data = model.load_data(data_path)
+    return model, data
+
+def extinction_birds2(data_path='datasets/Extinction/BirdTraits_2imputations_mean.csv'):
+    #attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
+    #         "Foraging","MatingSystem","NestPlacement",
+    #         "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
+    #         "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
+    #         "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
+    #         "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","ISL","LAT",
+    #         "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
+    #         "Range_size","Body_mass","Clutch_size"]
+    attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
+             "Foraging","MatingSystem","NestPlacement",
+             "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
+             "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
+             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
+             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","LAT",
              "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
              "Range_size","Body_mass","Clutch_size"]
     
