@@ -8,8 +8,6 @@ from utils import split_data # Or your stratified version if you prefer
 from datasets import new_extinction_birds # Our new function
 
 # Load the data
-
-# Cargar y filtrar los datos para usar solo 0 y 1 en extinction_risk
 model_template, data = new_extinction_birds()
 #label_index = model_template.attrs.index(model_template.label) if model_template.label in model_template.attrs else -1
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
