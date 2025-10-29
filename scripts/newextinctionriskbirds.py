@@ -62,7 +62,7 @@ print(f"Testing set size: {len(test_data)} newextinctionbirds")
 baseline_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
 
 # Fit the model on the training data
-baseline_model.fit(train_data, ratio=0.2)
+baseline_model.fit(train_data, ratio=0.5)
 
 # Print the rules the model learned
 print("--- Rules Learned by the Baseline Model ---")
@@ -105,7 +105,7 @@ for rule in expert_model.rules:
 
 # Now, fit the model on the training data.
 # The algorithm will work around the rules we provided.
-expert_model.fit(train_data, ratio=0.2)
+expert_model.fit(train_data, ratio=0.75)
 
 # Print the final, combined rule set
 print("--- Final Ruleset from the Expert Model ---")
@@ -156,7 +156,7 @@ for rule in learned_confidence_model.rules:
 
 # Now, fit the model on the training data.
 # The algorithm will calculate the confidence of our provided rules and then learn any additional rules needed.
-learned_confidence_model.fit(train_data, ratio=0.2)
+learned_confidence_model.fit(train_data, ratio=0.5)
 
 # Print the final, combined rule set
 print("--- Final Ruleset with Learned Confidence ---")
