@@ -71,15 +71,15 @@ def updated_extinction_birds(data_path='datasets/Extinction/Avo_Birdbase.csv'):
 def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imp_28Oct.csv'):
     attrs = ["Primary.Lifestyle","RLM",#"Nest_Type","Nest_SBS",
              "Flightlessness","Order","Foraging","MatingSystem","NestPlacement",
-             "Territoriality","IslandDwelling","Family","Diet","Habitat_cat","Migration","IslandEndemic""Beak.Length_Culmen","Beak.Length_Nares",
+             "Territoriality","IslandDwelling","Family","Diet","Habitat_cat","Migration","IslandEndemic","Beak.Length_Culmen","Beak.Length_Nares",
              "Beak.Width","Beak.Depth","Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length",
-             "Habitat.Density","Min.Latitude","Max.Latitude","LAT","Elevational.Range","HB","DB","LogNightLights",
-             "LogHumanPopulationDensity","Range_size","Body_mass","Clutch_size"]
+             "Habitat.Density","Min.Latitude","Max.Latitude","LAT","Elevational.Range","HB","DB",#"LogNightLights","LogHumanPopulationDensity",
+             "Range_size","Body_mass","Clutch_size"]
    
-    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
-             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length", "Min.Latitude","Max.Latitude", "Elevational.Range", "HB", "DB",
-             "LogNightLights","LogHumanPopulationDensity", "Range_size", "Body_mass", "Clutch_size"]
+    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth","Tarsus.Length","Wing.Length","Kipps.Distance",
+            "Secondary1","Hand.Wing.Index","Tail.Length", "Min.Latitude","Max.Latitude", "Elevational.Range", "HB", "DB",
+             #"LogNightLights","LogHumanPopulationDensity", 
+             "Range_size", "Body_mass", "Clutch_size"]
     label = "extinction_risk"
     model = Classifier(attrs=attrs, numeric=nums, label=label)
     data = model.load_data(data_path) # Use the argument here
