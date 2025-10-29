@@ -69,7 +69,8 @@ def updated_extinction_birds(data_path='datasets/Extinction/Avo_Birdbase.csv'):
     return model, data
 
 def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imp_28Oct.csv'):
-    attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Order","Foraging","MatingSystem","NestPlacement",
+    attrs = ["Primary.Lifestyle","RLM",#"Nest_Type","Nest_SBS",
+             "Flightlessness","Order","Foraging","MatingSystem","NestPlacement",
              "Territoriality","IslandDwelling","Family","Diet","Habitat_cat","Migration","IslandEndemic""Beak.Length_Culmen","Beak.Length_Nares",
              "Beak.Width","Beak.Depth","Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length",
              "Habitat.Density","Min.Latitude","Max.Latitude","LAT","Elevational.Range","HB","DB","LogNightLights",
