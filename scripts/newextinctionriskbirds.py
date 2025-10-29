@@ -9,7 +9,6 @@ from datasets import new_extinction_birds # Our new function
 
 # Load the data
 model_template, data = new_extinction_birds()
-#label_index = model_template.attrs.index(model_template.label) if model_template.label in model_template.attrs else -1
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
@@ -50,20 +49,20 @@ print(f"Predicted Labels: {predicted_labels}")
 print(f"Accuracy: {accuracy * 100:.2f}%")
 
 # Instantiate a new classifier for our expert-guided model
-expert_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+#expert_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
 # Note: the symbols '==' and '<=' must also be in single quotes for the parser.
-#rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '5'"
+#rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Body_mass' '<=' '15.2'" #This is the value of the first quartil of the data
 #Note additional rules could be added like this:
-#rule2 = "with confidence 0.70 class = '1' if 'Clutch_Max' '==' '1'"
+#rule2 = "with confidence 0.80 class = 'Higher_risk' if 'Clutch_size' '<=' '2'"
 
 # Add the manual rules to the model
 #expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 # Note: here is code to add an additional rule:
-#expert_model.add_manual_rule(rule2, model_template.attrs, model_template.numeric, ['0', '1'], instructions=False)
+#expert_model.add_manual_rule(rule2, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
-# print("--- Manual Rules Added to the Model (Before Training) ---")
+#print("--- Manual Rules Added to the Model (Before Training) ---")
 # The internal representation is a bit complex, but we can see our rules are in there.
 #for rule in expert_model.rules:
 #    print(rule)
@@ -100,46 +99,46 @@ expert_model = Classifier(attrs=model_template.attrs, numeric=model_template.num
 #print(f"Accuracy: {expert_accuracy * 100:.2f}%")
 
 # Instantiate a new classifier
-learned_confidence_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+#learned_confidence_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
-rule1_no_confidence = "class = 'Higher_risk' if 'Migration' '==' 'Sedentary'"
-#rule2_no_confidence = "class = 'Higher_risk' if 'Clutch_size' '<=' '1'"
+#rule1_no_confidence = "class = 'Higher_risk' if 'Body_mass' '<=' '15.2'" 
+#rule2_no_confidence = "class = 'Higher_risk' if 'Clutch_size' '<=' '2'"
 
 # Add the manual rules to the model
-learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 #learned_confidence_model.add_manual_rule(rule2_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
-print("--- Manual Rules Added (Before Training) ---")
-print("Notice the default confidence value of 0.5 assigned to each rule.")
-for rule in learned_confidence_model.rules:
-    print(rule)
+#print("--- Manual Rules Added (Before Training) ---")
+#print("Notice the default confidence value of 0.5 assigned to each rule.")
+#for rule in learned_confidence_model.rules:
+#    print(rule)
 
 # Now, fit the model on the training data.
 # The algorithm will calculate the confidence of our provided rules and then learn any additional rules needed.
-learned_confidence_model.fit(train_data, ratio=0.5)
+#learned_confidence_model.fit(train_data, ratio=0.5)
 
 # Print the final, combined rule set
-print("--- Final Ruleset with Learned Confidence ---")
-print("The confidence values have now been updated based on the training data!")
-learned_confidence_model.print_asp(simple=True)
+#print("--- Final Ruleset with Learned Confidence ---")
+#print("The confidence values have now been updated based on the training data!")
+#learned_confidence_model.print_asp(simple=True)
             #Note that confidence values will be relatively low due to the small size of the training data. 
 
 # Get predictions from our new model
-learned_conf_predictions = learned_confidence_model.predict(X_test)
-learned_conf_labels = [p[0] for p in learned_conf_predictions]
+#learned_conf_predictions = learned_confidence_model.predict(X_test)
+#learned_conf_labels = [p[0] for p in learned_conf_predictions]
 
 # Calculate accuracy
-learned_conf_accuracy = sum(1 for i in range(len(Y_test)) if learned_conf_labels[i] == Y_test[i]) / len(Y_test)
+#learned_conf_accuracy = sum(1 for i in range(len(Y_test)) if learned_conf_labels[i] == Y_test[i]) / len(Y_test)
 
-print("--- Learned Confidence Model Evaluation ---")
-print(f"True Labels:      {Y_test}")
-print(f"Predicted Labels: {learned_conf_labels}")
-print(f"Accuracy: {learned_conf_accuracy * 100:.2f}%")
+#print("--- Learned Confidence Model Evaluation ---")
+#print(f"True Labels:      {Y_test}")
+#print(f"Predicted Labels: {learned_conf_labels}")
+#print(f"Accuracy: {learned_conf_accuracy * 100:.2f}%")
 
 # First, let's re-print the rules from our expert model for comparison
-print("--- Rules Before Pruning ---")
-expert_model.print_asp(simple=True)
+#print("--- Rules Before Pruning ---")
+#expert_model.print_asp(simple=True)
 
 ############PRUNNING##################
 
