@@ -68,7 +68,7 @@ def updated_extinction_birds(data_path='datasets/Extinction/Avo_Birdbase.csv'):
     print('\n% extinction birds dataset loaded', np.shape(data))
     return model, data
 
-def new_extinction_birds(data_path='datasets/Extinction/AvoBirdbBehGLength_noNA.csv'):
+def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imp_6Nov.csv'):
     attrs = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth","Tarsus.Length",
              "Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length",
              "Habitat.Density","Primary.Lifestyle","Min.Latitude","Max.Latitude","RLM","LAT",
