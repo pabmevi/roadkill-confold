@@ -49,26 +49,7 @@ def extinction_birds(data_path='datasets/Extinction/AvoIUCNbehavMig.csv'):
     print('\n% extinction birds dataset loaded', np.shape(data))
     return model, data
 
-def updated_extinction_birds(data_path='datasets/Extinction/Avo_Birdbase.csv'):
-    attrs = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
-             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length","Habitat.Density","Migration","Primary.Lifestyle","Min.Latitude",
-             "Max.Latitude","Centroid.Latitude","Centroid.Longitude","Range.Size",
-             "RR","ISL","RLM","LAT","Elevational.Range","HB","DB",
-             "Nest_Type","Nest_SBS","Clutch_Max","Flightlessness","BodyMass","Order2",
-             "Family","Habitat1"]
-    
-    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
-             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length","Min.Latitude","Max.Latitude","Centroid.Latitude","Centroid.Longitude",
-             "Range.Size","Elevational.Range","HB","DB","Clutch_Max","BodyMass"]
-    label = "extinction_risk"
-    model = Classifier(attrs=attrs, numeric=nums, label=label)
-    data = model.load_data(data_path) # Use the argument here
-    print('\n% extinction birds dataset loaded', np.shape(data))
-    return model, data
-
-def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imp_6Nov.csv'):
+def new_extinction_birds_nomissingvalues(data_path='datasets/Extinction/AvoBirdbBehGLength_noNA.csv'):
     attrs = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth","Tarsus.Length",
              "Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length",
              "Habitat.Density","Primary.Lifestyle","Min.Latitude","Max.Latitude","RLM","LAT",
@@ -78,7 +59,26 @@ def new_extinction_birds(data_path='datasets/Extinction/BirdTraits_15imp_6Nov.cs
              "Body_mass","Clutch_size","Diet","Migration","IslandEndemic","Adult.survival",
              "Age.at.first.breeding","Maximum.longevity","GenLength","extinction_risk"
 ]
-   
+    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth","Tarsus.Length",
+            "Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length", "Min.Latitude",
+            "Max.Latitude", "MinAltitude","Elevational.Range","MaxAltitude", "HB", "DB","LogNightLights",
+            "LogHumanPopulationDensity", "Range_size", "Body_mass", "Clutch_size"]
+    label = "extinction_risk"
+    model = Classifier(attrs=attrs, numeric=nums, label=label)
+    data = model.load_data(data_path) # Use the argument here
+    print('\n% extinction birds dataset loaded', np.shape(data))
+    return model, data
+
+def new_extinction_birds_imputed(data_path='datasets/Extinction/BirdTraits_15imp_6Nov.csv'):
+    attrs = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth","Tarsus.Length",
+             "Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length",
+             "Habitat.Density","Primary.Lifestyle","Min.Latitude","Max.Latitude","RLM","LAT",
+             "MinAltitude","Elevational.Range","MaxAltitude","HB","DB","Flightlessness","Order",
+             "Habitat","Foraging","MatingSystem","NestPlacement","Territoriality","IslandDwelling",
+             "LogNightLights","LogHumanPopulationDensity","Family","Range_size",
+             "Body_mass","Clutch_size","Diet","Migration","IslandEndemic","Adult.survival",
+             "Age.at.first.breeding","Maximum.longevity","GenLength","extinction_risk"
+]
     nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth","Tarsus.Length",
             "Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index","Tail.Length", "Min.Latitude",
             "Max.Latitude", "MinAltitude","Elevational.Range","MaxAltitude", "HB", "DB","LogNightLights",

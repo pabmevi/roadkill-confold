@@ -7,7 +7,7 @@ import random
 import numpy as np
 from foldrm import Classifier
 from utils import split_data # Or your stratified version if you prefer
-from datasets import new_extinction_birds # Our new function
+from datasets import new_extinction_birds_imputed # Our new function
 
 # ---------------- seed / reproducibility ----------------
 # Accept a --seed CLI argument (or read SEED from env) so runs can be reproducible.
@@ -61,7 +61,7 @@ def print_confusion_matrix(labels, mat):
         print(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)))
 
 # Load the data
-model_template, data = new_extinction_birds()
+model_template, data = new_extinction_birds_imputed()
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
