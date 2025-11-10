@@ -89,7 +89,7 @@ expert_model = Classifier(attrs=model_template.attrs, numeric=model_template.num
 
 # Define our expert rules as strings
 # Note: the symbols '==' and '<=' must also be in single quotes for the parser.
-rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Body_mass' '<=' '124'" #This is the value of the third quartil of the data
+rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Body_mass' '>=' '124'" #This is the value of the third quartil of the data
 #Note additional rules could be added like this:
 rule2 = "with confidence 0.80 class = 'Higher_risk' if 'Clutch_size' '<=' '2'"
 
@@ -142,7 +142,7 @@ all_predictions['expert_with_confidence'] = expert_predicted_labels
 learned_confidence_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
-rule1_no_confidence = "class = 'Higher_risk' if 'Body_mass' '<=' '124'" 
+rule1_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '124'" 
 rule2_no_confidence = "class = 'Higher_risk' if 'Clutch_size' '<=' '2'"
 
 # Add the manual rules to the model
