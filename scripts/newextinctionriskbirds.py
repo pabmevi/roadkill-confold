@@ -2,10 +2,22 @@ import sys, os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../CONFOLD/'))) #add CONFOLD to path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))) #add the parent directory to the path
 
+import argparse
+import random
 import numpy as np
 from foldrm import Classifier
 from utils import split_data # Or your stratified version if you prefer
 from datasets import new_extinction_birds # Our new function
+
+# ---------------- seed / reproducibility ----------------
+# Accept a --seed CLI argument (or read SEED from env) so runs can be reproducible.
+parser = argparse.ArgumentParser(add_help=False)
+parser.add_argument('--seed', type=int, default=None, help='Random seed for reproducibility')
+args, _ = parser.parse_known_args()
+SEED = args.seed if args.seed is not None else int(os.environ.get('SEED', '42'))
+random.seed(SEED)
+np.random.seed(SEED)
+print(f"Using seed={SEED}")
 
 # --- Confusion matrix helper (used for baseline and expert models) ---
 from collections import defaultdict
