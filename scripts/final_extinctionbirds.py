@@ -61,14 +61,14 @@ def print_confusion_matrix(labels, mat):
         print(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)))
 
 # Load the data
-model_template, data = new_extinction_birds_nomissingvalues()
+model_template, data = final_extinctionrisk()
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
 train_data, test_data = split_data(data, ratio=0.8, shuffle=True)
 
-print(f"Training set size: {len(train_data)} newextinctionbirds")
-print(f"Testing set size: {len(test_data)} newextinctionbirds")
+print(f"Training set size: {len(train_data)} final_extinctionrisk")
+print(f"Testing set size: {len(test_data)} final_extinctionrisk")
 
 # Instantiate a new classifier for our baseline experiment
 baseline_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
