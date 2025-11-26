@@ -12,11 +12,34 @@ class MyClassifier(Classifier):
         
 
 def use_dataframe(file, attrs, label, numeric, amount):
-    df = pd.read_csv(file) #get the dataframe
+    # Read CSV more robustly: use the python engine and keep all fields as strings
+    # to avoid tokenization errors on malformed rows. Warn on bad lines.
+    try:
+        df = pd.read_csv(file, engine='python', on_bad_lines='warn', dtype=str)
+    except TypeError:
+        # Older pandas versions used error_bad_lines / warn_bad_lines; fall back
+        df = pd.read_csv(file, engine='python', dtype=str)
+    except Exception:
+        # As a final fallback, try skipping bad lines
+        df = pd.read_csv(file, engine='python', on_bad_lines='skip', dtype=str)
 
-    #split into x and y
-    df_x = df[attrs]
+    # Ensure all requested attribute columns exist; if missing, create them with empty values
+    for col in attrs:
+        if col not in df.columns:
+            df[col] = ''
+
+    # Ensure label column exists
+    if label not in df.columns:
+        df[label] = ''
+
+    # Select columns in the requested order and concatenate label as last column
+    df_x = df.reindex(columns=attrs)
     df_y = df[label]
-    result = pd.concat([df_x,df_y], axis=1)
+    result = pd.concat([df_x, df_y], axis=1)
+
+    # Convert DataFrame to list-of-lists (rows) so downstream code that expects lists works
+    rows = result.values.tolist()
+
+    # Keep existing behavior of appending label to attrs for compatibility
     attrs.append(label)
-    return result,attrs
+    return rows, attrs

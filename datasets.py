@@ -10,7 +10,7 @@ import pandas as pd
 from CONFOLD.foldrm import Classifier
         
 def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_26Nov25.csv'):
-    attrs = ["original_name","Residential_IUCN","Agriculture_IUCN","Energy_IUCN","Transportation_IUCN",
+    attrs = ["Residential_IUCN","Agriculture_IUCN","Energy_IUCN","Transportation_IUCN",
              "Biological_Use_IUCN","Human_Intrusions_IUCN","Natural_Modifications_IUCN","Invasive_IUCN","Pollution_IUCN",
              "Geological_IUCN","Climate_IUCN","n_threats_IUCN","Habitat.Density_AVONET","Primary.Lifestyle_AVONET",
              "Beak.Length_Culmen_AVONET","Beak.Length_Nares_AVONET","Beak.Width_AVONET","Beak.Depth_AVONET",
@@ -20,9 +20,8 @@ def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_26Nov25
              "Flightlessness_BirdBase","Adult.survival_GenLength","Age.at.first.breeding_GenLength",
              "Maximum.longevity_GenLength","GenLength_GenLength","Foraging_BirdBehav","MatingSystem_BirdBehav",
              "NestPlacement_BirdBehav","Territoriality_BirdBehav","IslandDwelling_BirdBehav","LogNightLights_BirdBehav",
-             "LogHumanPopulationDensity_BirdBehav","Order.IUCN","Family.IUCN","Range_size","Body_mass","IUCN_status2025",
-             "Clutch_size","Diet","Habitat","Migration"
-]
+             "LogHumanPopulationDensity_BirdBehav","Order.IUCN","Family.IUCN","Range_size","Body_mass",
+             "Clutch_size","Diet","Habitat","Migration"]
     
     nums = ["Beak.Length_Culmen_AVONET","Beak.Length_Nares_AVONET","Beak.Width_AVONET","Beak.Depth_AVONET",
              "Tarsus.Length_AVONET","Wing.Length_AVONET","Kipps.Distance_AVONET","Secondary1_AVONET","Hand.Wing.Index_AVONET",
