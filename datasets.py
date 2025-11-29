@@ -11,7 +11,7 @@ from CONFOLD.foldrm import Classifier
         
 def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_28Nov25.csv'):
     attrs = ["Agriculture","Energy","Transportation","Biological_use_hunting",
-             "Invasive_species","Climate_change","Number_of_threats","Primary_lifestyle",
+             "Invasive_species","Climate_change","Primary_lifestyle",
              "Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length",
              "Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
              "Island_restricted_breeding","Realm","Latitudinal_range","Minimum_elevation",
@@ -21,7 +21,7 @@ def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_28Nov25
              "Order","Family","Range_size","Body_mass","Clutch_size","Diet","Habitat",
              "Migration"]
     
-    nums = ["Number_of_threats","Beak_length_culmen","Beak_depth","Tarsus_length",
+    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length",
             "Wing_length","Hand_wing_index","Tail_length","Minimum_latitude",
             "Maximum_latitude","Minimum_elevation","Elevational_range",
             "Maximum_elevation","Habitat_breadth","Diet_breadth","Adult_survival_annual",
