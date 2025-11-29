@@ -65,7 +65,7 @@ model_template, data = final_extinctionrisk()
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
-train_data, test_data = split_data(data, ratio=0.8, shuffle=True)
+train_data, test_data = split_data(data, ratio=0.75, shuffle=True)
 
 print(f"Training set size: {len(train_data)} final_extinctionrisk")
 print(f"Testing set size: {len(test_data)} final_extinctionrisk")
@@ -101,9 +101,9 @@ expert_model = Classifier(attrs=model_template.attrs, numeric=model_template.num
 
 # Define our expert rules as strings
 # Note: the symbols '==' and '<=' must also be in single quotes for the parser.
-rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Body_mass' '>=' '124'" #This is the value of the third quartil of the data
+rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '130822'" #This is the value of the third quartil of the data
 #Note additional rules could be added like this:
-rule2 = "with confidence 0.80 class = 'Higher_risk' if 'Clutch_size' '<=' '2'"
+rule2 = "with confidence 0.70 class = 'Higher_risk' if 'Body_mass' '>=' '124'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -154,8 +154,8 @@ all_predictions['expert_with_confidence'] = expert_predicted_labels
 learned_confidence_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
-rule1_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '124'" 
-rule2_no_confidence = "class = 'Higher_risk' if 'Clutch_size' '<=' '2'"
+rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '130822'"
+rule2_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '124'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
