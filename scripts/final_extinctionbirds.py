@@ -64,7 +64,7 @@ model_template, data = final_extinctionrisk()
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
-train_data, test_data = split_data(data, ratio=0.75, shuffle=True)
+train_data, test_data = split_data(data, ratio=0.70, shuffle=True)
 
 print(f"Training set size: {len(train_data)} final_extinctionrisk")
 print(f"Testing set size: {len(test_data)} final_extinctionrisk")
@@ -125,13 +125,9 @@ expert_predicted_labels = [p[0] for p in expert_predictions_tuples]
 expert_accuracy = sum(1 for i in range(len(Y_test)) if expert_predicted_labels[i] == Y_test[i]) / len(Y_test)
 
 print("--- Baseline Model Evaluation ---")
-print(f"True Labels:      {Y_test}")
-print(f"Predicted Labels: {predicted_labels}")
 print(f"Accuracy: {accuracy * 100:.2f}%\n")
 
 print("--- Expert Model Evaluation ---")
-print(f"True Labels:      {Y_test}")
-print(f"Predicted Labels: {expert_predicted_labels}")
 print(f"Accuracy: {expert_accuracy * 100:.2f}%")
 
 # Store predictions so we can print confusion matrices at the end of the script
@@ -173,8 +169,6 @@ learned_conf_labels = [p[0] for p in learned_conf_predictions]
 learned_conf_accuracy = sum(1 for i in range(len(Y_test)) if learned_conf_labels[i] == Y_test[i]) / len(Y_test)
 
 print("--- Learned Confidence Model Evaluation ---")
-print(f"True Labels:      {Y_test}")
-print(f"Predicted Labels: {learned_conf_labels}")
 print(f"Accuracy: {learned_conf_accuracy * 100:.2f}%")
 
 # Keep learned-confidence predictions too (this is the expert rules without an explicit confidence)
