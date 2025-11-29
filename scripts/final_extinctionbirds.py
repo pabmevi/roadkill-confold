@@ -20,7 +20,6 @@ np.random.seed(SEED)
 print(f"Using seed={SEED}")
 
 # --- Confusion matrix helper (used for baseline and expert models) ---
-from collections import defaultdict
 
 def confusion_matrix_and_metrics(y_true, y_pred, labels=None):
     if labels is None:
@@ -71,7 +70,7 @@ print(f"Training set size: {len(train_data)} final_extinctionrisk")
 print(f"Testing set size: {len(test_data)} final_extinctionrisk")
 
 # Instantiate a new classifier for our baseline experiment
-baseline_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+baseline_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Fit the model on the training data
 baseline_model.fit(train_data, ratio=0.5)
@@ -89,15 +88,10 @@ predictions_tuples = baseline_model.predict(X_test)
 predicted_labels = [p[0] for p in predictions_tuples]
 
 # Calculate accuracy
-correct_predictions = 0
-for i in range(len(Y_test)):
-    if predicted_labels[i] == Y_test[i]:
-            correct_predictions += 1
-
-accuracy = correct_predictions / len(Y_test)
+accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels[i] == Y_test[i]) / len(Y_test)
 
 # Instantiate a new classifier for our expert-guided model
-expert_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
 # Note: the symbols '==' and '<=' must also be in single quotes for the parser.
@@ -128,12 +122,7 @@ expert_predictions_tuples = expert_model.predict(X_test)
 expert_predicted_labels = [p[0] for p in expert_predictions_tuples]
 
 # Calculate accuracy
-expert_correct_predictions = 0
-for i in range(len(Y_test)):
-    if expert_predicted_labels[i] == Y_test[i]:
-        expert_correct_predictions += 1
-
-expert_accuracy = expert_correct_predictions / len(Y_test)
+expert_accuracy = sum(1 for i in range(len(Y_test)) if expert_predicted_labels[i] == Y_test[i]) / len(Y_test)
 
 print("--- Baseline Model Evaluation ---")
 print(f"True Labels:      {Y_test}")
@@ -151,7 +140,7 @@ all_predictions['baseline'] = predicted_labels
 all_predictions['expert_with_confidence'] = expert_predicted_labels
 
 # Instantiate a new classifier
-learned_confidence_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
 rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '130822'"
@@ -213,7 +202,7 @@ expert_model.print_asp(simple=True)
 #simple_pruned_model.print_asp(simple=True)
             
 # Instantiate a new model for this experiment
-advanced_pruning_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 ##################
 #### Method 2: Advanced Confidence-Driven Learning
