@@ -9,7 +9,7 @@ import numpy as np
 import pandas as pd
 from CONFOLD.foldrm import Classifier
         
-def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_28Nov25.csv'):
+def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_29Nov25.csv'):
     attrs = ["Agriculture","Energy","Transportation","Biological_use_hunting",
              "Invasive_species","Climate_change","Primary_lifestyle",
              "Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length",
