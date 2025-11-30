@@ -64,7 +64,7 @@ model_template, data = final_extinctionrisk()
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
-train_data, test_data = split_data_stratified(data, ratio=0.70, shuffle=True)
+train_data, test_data = split_data_stratified(data, ratio=0.80, shuffle=True)
 
 print(f"Training set size: {len(train_data)} final_extinctionrisk")
 print(f"Testing set size: {len(test_data)} final_extinctionrisk")
@@ -138,6 +138,7 @@ print(f"Accuracy: {expert_accuracy * 100:.2f}%")
 all_predictions = {}
 all_predictions['baseline'] = predicted_labels
 all_predictions['expert_with_confidence'] = expert_predicted_labels
+## La evaluación del modelo avanzado se realiza después de definir predicted_labels_advanced
 
 # Instantiate a new classifier
 learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
@@ -216,6 +217,16 @@ print("\n--- Rules Learned via Confidence-Driven Learning ---")
 print("Note how the model is simpler and did not learn any exceptions to rules or `abnormalities', as they did not meet the high confidence improvement threshold.")
 advanced_pruning_model.print_asp(simple=True)
 
+# === Predictions for Advanced Pruning Model ===
+predictions_advanced = advanced_pruning_model.predict(X_test)
+predicted_labels_advanced = [p[0] for p in predictions_advanced]
+# Store predictions for consolidated metrics
+all_predictions['advanced_pruning'] = predicted_labels_advanced
+# Print evaluation for advanced pruning model
+advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_advanced[i] == Y_test[i]) / len(Y_test)
+print("--- Advanced Pruning Model Evaluation ---")
+print(f"Accuracy: {advanced_accuracy * 100:.2f}%\n")
+
 
 # ------------------ Consolidated Confusion Matrices (end of script) ------------------
 def _norm_label(x):
@@ -229,7 +240,8 @@ Y_test_norm = [_norm_label(y) for y in Y_test]
 
 for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
-                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence'))]:
+                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
+                     ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
     if y_pred is None:
         continue
     y_pred_norm = [_norm_label(y) for y in y_pred]
