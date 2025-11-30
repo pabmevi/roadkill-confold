@@ -6,7 +6,7 @@ import argparse
 import random
 import numpy as np
 from foldrm import Classifier
-from utils import split_data # Or your stratified version if you prefer
+from utils import split_data_stratified  # Or your stratified version if you prefer
 from datasets import final_extinctionrisk # Our new function
 
 # ---------------- seed / reproducibility ----------------
@@ -64,7 +64,7 @@ model_template, data = final_extinctionrisk()
 #data = [row for row in data if str(row[label_index]) in ['Lower_risk', 'Higher_risk']]
 
 # Split into training and testing sets
-train_data, test_data = split_data(data, ratio=0.70, shuffle=True)
+train_data, test_data = split_data_stratified(data, ratio=0.70, shuffle=True)
 
 print(f"Training set size: {len(train_data)} final_extinctionrisk")
 print(f"Testing set size: {len(test_data)} final_extinctionrisk")
@@ -95,14 +95,18 @@ expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_templ
 
 # Define our expert rules as strings
 # Note: the symbols '==' and '<=' must also be in single quotes for the parser.
-rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '130822'" #This is the value of the third quartil of the data
+rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '130822'" #This is the value of the 1st quartil of the data
 #Note additional rules could be added like this:
 rule2 = "with confidence 0.70 class = 'Higher_risk' if 'Body_mass' '>=' '124'"
+rule3 = "with confidence 0.80 class = 'Higher_risk' if 'Biological_use_hunting' '=' '1'"
+rule4 = "with confidence 0.80 class = 'Higher_risk' if 'Agriculture' '=' '1'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 # Note: here is code to add an additional rule:
 expert_model.add_manual_rule(rule2, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_model.add_manual_rule(rule3, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_model.add_manual_rule(rule4, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added to the Model (Before Training) ---")
 # The internal representation is a bit complex, but we can see our rules are in there.
@@ -141,10 +145,14 @@ learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
 rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '130822'"
 rule2_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '124'"
+rule3_no_confidence = "class = 'Higher_risk' if 'Biological_use_hunting' '=' '1'"
+rule4_no_confidence = "class = 'Higher_risk' if 'Agriculture' '=' '1'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule2_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+learned_confidence_model.add_manual_rule(rule3_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+learned_confidence_model.add_manual_rule(rule4_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added (Before Training) ---")
 print("Notice the default confidence value of 0.5 assigned to each rule.")
@@ -168,7 +176,6 @@ learned_conf_labels = [p[0] for p in learned_conf_predictions]
 # Calculate accuracy
 learned_conf_accuracy = sum(1 for i in range(len(Y_test)) if learned_conf_labels[i] == Y_test[i]) / len(Y_test)
 
-print("--- Learned Confidence Model Evaluation ---")
 print(f"Accuracy: {learned_conf_accuracy * 100:.2f}%")
 
 # Keep learned-confidence predictions too (this is the expert rules without an explicit confidence)
@@ -209,6 +216,13 @@ print("\n--- Rules Learned via Confidence-Driven Learning ---")
 print("Note how the model is simpler and did not learn any exceptions to rules or `abnormalities', as they did not meet the high confidence improvement threshold.")
 advanced_pruning_model.print_asp(simple=True)
 
+# === Predictions for Advanced Pruning Model ===
+predictions_advanced = advanced_pruning_model.predict(X_test)
+predicted_labels_advanced = [p[0] for p in predictions_advanced]
+
+# Store predictions so the consolidated metrics can include this model
+all_predictions['advanced_pruning'] = predicted_labels_advanced
+
 
 # ------------------ Consolidated Confusion Matrices (end of script) ------------------
 def _norm_label(x):
@@ -222,7 +236,8 @@ Y_test_norm = [_norm_label(y) for y in Y_test]
 
 for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
-                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence'))]:
+                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
+                     ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
     if y_pred is None:
         continue
     y_pred_norm = [_norm_label(y) for y in y_pred]
