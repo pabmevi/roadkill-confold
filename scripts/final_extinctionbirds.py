@@ -98,8 +98,8 @@ expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_templ
 rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '130822'" #This is the value of the 1st quartil of the data
 #Note additional rules could be added like this:
 rule2 = "with confidence 0.70 class = 'Higher_risk' if 'Body_mass' '>=' '124'"
-rule3 = "with confidence 0.80 class = 'Higher_risk' if 'Biological_use_hunting' '=' '1'"
-rule4 = "with confidence 0.80 class = 'Higher_risk' if 'Agriculture' '=' '1'"
+rule3 = "with confidence 0.80 class = 'Higher_risk' if 'Biological_use_hunting' '==' '1'"
+rule4 = "with confidence 0.80 class = 'Higher_risk' if 'Agriculture' '==' '1'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
