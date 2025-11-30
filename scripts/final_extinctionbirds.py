@@ -145,8 +145,8 @@ learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
 rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '130822'"
 rule2_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '124'"
-rule3_no_confidence = "class = 'Higher_risk' if 'Biological_use_hunting' '=' '1'"
-rule4_no_confidence = "class = 'Higher_risk' if 'Agriculture' '=' '1'"
+rule3_no_confidence = "class = 'Higher_risk' if 'Biological_use_hunting' '==' '1'"
+rule4_no_confidence = "class = 'Higher_risk' if 'Agriculture' '==' '1'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -216,13 +216,6 @@ print("\n--- Rules Learned via Confidence-Driven Learning ---")
 print("Note how the model is simpler and did not learn any exceptions to rules or `abnormalities', as they did not meet the high confidence improvement threshold.")
 advanced_pruning_model.print_asp(simple=True)
 
-# === Predictions for Advanced Pruning Model ===
-predictions_advanced = advanced_pruning_model.predict(X_test)
-predicted_labels_advanced = [p[0] for p in predictions_advanced]
-
-# Store predictions so the consolidated metrics can include this model
-all_predictions['advanced_pruning'] = predicted_labels_advanced
-
 
 # ------------------ Consolidated Confusion Matrices (end of script) ------------------
 def _norm_label(x):
@@ -236,8 +229,7 @@ Y_test_norm = [_norm_label(y) for y in Y_test]
 
 for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
-                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
-                     ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
+                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence'))]:
     if y_pred is None:
         continue
     y_pred_norm = [_norm_label(y) for y in y_pred]
