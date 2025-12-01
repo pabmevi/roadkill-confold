@@ -148,6 +148,13 @@ print(f"Accuracy: {accuracy * 100:.2f}%\n")
 print("--- Expert Model Evaluation ---")
 print(f"Accuracy: {expert_accuracy * 100:.2f}%")
 
+# EXPERT WITH CONFIDENCE
+with open('confold_results/02_expert_with_confidence.txt', 'w') as f:
+    expert_model.asp()
+    f.write("EXPERT MODEL (With Confidence)\n" + "="*50 + "\n\n")
+    f.write("RULES:\n" + "\n".join(expert_model.asp_rules) + "\n\n")
+    f.write(f"Accuracy: {expert_accuracy * 100:.2f}%\n")
+
 # Store predictions so we can print confusion matrices at the end of the script
 all_predictions = {}
 all_predictions['baseline'] = predicted_labels
@@ -201,6 +208,13 @@ learned_conf_accuracy = sum(1 for i in range(len(Y_test)) if learned_conf_labels
 
 print(f"Accuracy: {learned_conf_accuracy * 100:.2f}%")
 
+# LEARNED CONFIDENCE
+with open('confold_results/03_expert_learned_confidence.txt', 'w') as f:
+    learned_confidence_model.asp()
+    f.write("EXPERT MODEL (Learned Confidence)\n" + "="*50 + "\n\n")
+    f.write("RULES:\n" + "\n".join(learned_confidence_model.asp_rules) + "\n\n")
+    f.write(f"Accuracy: {learned_conf_accuracy * 100:.2f}%\n")
+
 # Keep learned-confidence predictions too (this is the expert rules without an explicit confidence)
 all_predictions['expert_no_confidence'] = learned_conf_labels
 
@@ -246,6 +260,13 @@ predicted_labels_advanced = [p[0] for p in predictions_advanced]
 all_predictions['advanced_pruning'] = predicted_labels_advanced
 # Print evaluation for advanced pruning model
 advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_advanced[i] == Y_test[i]) / len(Y_test)
+
+# PRUNED MODEL
+with open('confold_results/04_pruned_model.txt', 'w') as f:
+    advanced_pruning_model.asp()
+    f.write("PRUNED MODEL\n" + "="*50 + "\n\n")
+    f.write("RULES:\n" + "\n".join(advanced_pruning_model.asp_rules) + "\n\n")
+    f.write(f"Accuracy: {advanced_accuracy * 100:.2f}%\n")
 
 # ------------------ Consolidated Confusion Matrices (end of script) ------------------
 def _norm_label(x):
