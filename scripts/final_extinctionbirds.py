@@ -326,6 +326,53 @@ simple_pruned_model.print_asp(simple=True)
 # Instantiate a new model for this experiment
 advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
+# Después de crear simple_pruned_model, agrega esto:
+
+print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
+simple_pruned_model.print_asp(simple=True)
+
+# === Predictions for Simple Pruned Model ===
+predictions_simple_pruned = simple_pruned_model.predict(X_test)
+predicted_labels_simple_pruned = [p[0] for p in predictions_simple_pruned]
+# Store predictions
+all_predictions['simple_pruned'] = predicted_labels_simple_pruned
+# Calculate accuracy
+simple_pruned_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_simple_pruned[i] == Y_test[i]) / len(Y_test)
+
+# SIMPLE PRUNED MODEL
+with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
+    simple_pruned_model.asp()
+    f.write("SIMPLE PRUNED MODEL (Confidence >= 0.90)\n" + "="*70 + "\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(simple_pruned_model.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in predicted_labels_simple_pruned]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {simple_pruned_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 ##################
 #### Method 2: Advanced Confidence-Driven Learning
 
@@ -345,8 +392,8 @@ all_predictions['advanced_pruning'] = predicted_labels_advanced
 # Print evaluation for advanced pruning model
 advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_advanced[i] == Y_test[i]) / len(Y_test)
 
-# PRUNED MODEL
-with open('confold_results/04_pruned_model.txt', 'w') as f:
+# ADVANCED PRUNED MODEL
+with open('confold_results/05_advanced_pruning.txt', 'w') as f:
     advanced_pruning_model.asp()
     f.write("PRUNED MODEL\n" + "="*70 + "\n\n")
     f.write("RULES:\n" + "-"*70 + "\n")
@@ -392,7 +439,8 @@ Y_test_norm = [_norm_label(y) for y in Y_test]
 
 for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
-                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
+                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence'))
+                     ('Simple Pruning', all_predictions.get('simple_pruned')),
                      ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
     if y_pred is None:
         continue
