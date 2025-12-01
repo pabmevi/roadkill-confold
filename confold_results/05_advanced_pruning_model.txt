@@ -7,19 +7,16 @@ extinction_risk(X,'lower_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
-extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
 rule1(X) :- biological_use_hunting(X,'0'). [confidence: 0.96728]
-rule2(X) :- range_size(X,N32), N32>697.48, not ab1(X), not ab7(X). [confidence: 0.73516]
-rule3(X) :- generation_length(X,N24), N24<=12.93458. [confidence: 0.7765]
-rule4(X) :- not agriculture(X,'0'). [confidence: 0.85484]
-rule5(X) :- agriculture(X,'0'). [confidence: 0.83333]
-ab1(X) :- beak_depth(X,N8), N8>19.8, range_size(X,N32), N32<=330067.23.
-ab2(X) :- tail_length(X,N12), N12>253.3, human_population_density(X,N29), N29>30.1.
-ab3(X) :- beak_length_culmen(X,N7), N7>101.7, habitat_breadth(X,N21), N21<=2.0.
-ab4(X) :- transportation(X,'0'), beak_length_culmen(X,N7), N7<=130.0, tarsus_length(X,N9), N9>76.2, not ab2(X), not ab3(X).
-ab5(X) :- beak_length_culmen(X,N7), N7<=47.4.
-ab6(X) :- maximum_latitude(X,N14), N14>45.93, elevational_range(X,N19), N19>2000.0.
-ab7(X) :- beak_length_culmen(X,N7), N7<=256.5, wing_length(X,N10), N10>481.5, not ab4(X), not ab5(X), not ab6(X).
+rule2(X) :- range_size(X,N32), N32>697.48. [confidence: 0.67091]
+rule3(X) :- beak_depth(X,N8), N8>3.9. [confidence: 0.86264]
+rule4(X) :- range_size(X,N32), N32<=255.12. [confidence: 0.70455]
+rule5(X) :- beak_length_culmen(X,N7), N7>13.9. [confidence: 0.75]
+rule6(X) :- not agriculture(X,'0'). [confidence: 0.65385]
+rule7(X) :- agriculture(X,'0'). [confidence: 0.55]
 
 ======================================================================
 PERFORMANCE METRICS
@@ -27,23 +24,23 @@ PERFORMANCE METRICS
 
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk               26             137
- TRUE:Lower_risk               16            1444
+TRUE:Higher_risk               11             152
+ TRUE:Lower_risk                6            1454
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.619
-  Recall:    0.160
-  F1-Score:  0.254
+  Precision: 0.647
+  Recall:    0.067
+  F1-Score:  0.122
   Support:   163
 
 Lower_risk:
-  Precision: 0.913
-  Recall:    0.989
-  F1-Score:  0.950
+  Precision: 0.905
+  Recall:    0.996
+  F1-Score:  0.948
   Support:   1460
 
 ----------------------------------------------------------------------
-Overall Accuracy: 90.57%
+Overall Accuracy: 90.26%
 ======================================================================
