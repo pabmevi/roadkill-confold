@@ -126,11 +126,10 @@ with open('confold_results/01_baseline.txt', 'w') as f:
     
     f.write("-"*70 + f"\nOverall Accuracy: {accuracy * 100:.2f}%\n" + "="*70 + "\n")
 
-# Instantiate a new classifier for our expert-guided model
+# Instantiate a new classifier for expert-guided model
 expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
-# Note: the symbols '==' and '<=' must also be in single quotes for the parser.
 rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '130822'" #This is the value of the 1st quartil of the data
 rule2 = "with confidence 0.90 class = 'Lower_risk' if 'Range_size' '>=' '3325231'" #This is the value of the 3rd quartil of the data
 rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '==' '1'"
@@ -151,7 +150,6 @@ expert_model.add_manual_rule(rule7, model_template.attrs, model_template.numeric
 expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added to the Model (Before Training) ---")
-# The internal representation is a bit complex, but we can see our rules are in there.
 for rule in expert_model.rules:
     print(rule)
 
@@ -323,9 +321,6 @@ simple_pruned_model.rules = pruned_rules
 print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
 simple_pruned_model.print_asp(simple=True)
             
-# Instantiate a new model for this experiment
-advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
-
 # Después de crear simple_pruned_model, agrega esto:
 
 print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
@@ -375,6 +370,8 @@ with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
     f.write("-"*70 + f"\nOverall Accuracy: {simple_pruned_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 ##################
 #### Method 2: Advanced Confidence-Driven Learning
+# Instantiate a new model for this experiment
+advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Now, train using confidence_fit with a high 15% improvement threshold
 print("--- Training with confidence_fit(improvement_threshold=0.15) ---")

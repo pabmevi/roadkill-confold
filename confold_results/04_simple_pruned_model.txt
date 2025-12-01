@@ -1,4 +1,4 @@
-SIMPLE PRUNED MODEL (Confidence >= 0.90)
+SIMPLE PRUNING (Confidence >= 0.90)
 ======================================================================
 
 RULES:
