@@ -323,6 +323,14 @@ simple_pruned_model.rules = pruned_rules
 print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
 simple_pruned_model.print_asp(simple=True)
             
+# Instantiate a new model for this experiment
+advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
+
+# Después de crear simple_pruned_model, agrega esto:
+
+print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
+simple_pruned_model.print_asp(simple=True)
+
 # === Predictions for Simple Pruned Model ===
 predictions_simple_pruned = simple_pruned_model.predict(X_test)
 predicted_labels_simple_pruned = [p[0] for p in predictions_simple_pruned]
@@ -331,7 +339,7 @@ all_predictions['simple_pruned'] = predicted_labels_simple_pruned
 # Calculate accuracy
 simple_pruned_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_simple_pruned[i] == Y_test[i]) / len(Y_test)
 
-# SIMPLE PRUNED MODEL
+# GUARDAR SIMPLE PRUNED MODEL
 with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
     simple_pruned_model.asp()
     f.write("SIMPLE PRUNED MODEL (Confidence >= 0.90)\n" + "="*70 + "\n\n")
@@ -367,8 +375,6 @@ with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
     f.write("-"*70 + f"\nOverall Accuracy: {simple_pruned_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 ##################
 #### Method 2: Advanced Confidence-Driven Learning
-# Instantiate a new model for this experiment
-advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Now, train using confidence_fit with a high 15% improvement threshold
 print("--- Training with confidence_fit(improvement_threshold=0.15) ---")
@@ -389,7 +395,7 @@ advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_advanc
 # ADVANCED PRUNED MODEL
 with open('confold_results/05_advanced_pruning.txt', 'w') as f:
     advanced_pruning_model.asp()
-    f.write("PRUNED MODEL\n" + "="*70 + "\n\n")
+    f.write("ADVANCED PRUNED MODEL\n" + "="*70 + "\n\n")
     f.write("RULES:\n" + "-"*70 + "\n")
     f.write("\n".join(advanced_pruning_model.asp_rules) + "\n\n")
     
