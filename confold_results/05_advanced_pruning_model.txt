@@ -10,13 +10,16 @@ extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not ru
 extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
 extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
 extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
+extinction_risk(X,'lower_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
 rule1(X) :- biological_use_hunting(X,'0'). [confidence: 0.96728]
 rule2(X) :- range_size(X,N32), N32>697.48. [confidence: 0.67091]
 rule3(X) :- beak_depth(X,N8), N8>3.9. [confidence: 0.86264]
-rule4(X) :- range_size(X,N32), N32<=255.12. [confidence: 0.70455]
-rule5(X) :- beak_length_culmen(X,N7), N7>13.9. [confidence: 0.75]
-rule6(X) :- not agriculture(X,'0'). [confidence: 0.65385]
+rule4(X) :- range_size(X,N32), N32<=255.12, not ab1(X). [confidence: 0.775]
+rule5(X) :- beak_length_culmen(X,N7), N7>13.9. [confidence: 0.76316]
+rule6(X) :- maximum_elevation(X,N20), N20>500.0. [confidence: 0.65385]
 rule7(X) :- agriculture(X,'0'). [confidence: 0.55]
+rule8(X) :- agriculture(X,'1'). [confidence: 0.55]
+ab1(X) :- tarsus_length(X,N9), N9>17.6, wing_length(X,N10), N10<=60.4.
 
 ======================================================================
 PERFORMANCE METRICS
@@ -25,22 +28,22 @@ PERFORMANCE METRICS
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
 TRUE:Higher_risk               11             152
- TRUE:Lower_risk                6            1454
+ TRUE:Lower_risk                5            1455
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.647
+  Precision: 0.688
   Recall:    0.067
-  F1-Score:  0.122
+  F1-Score:  0.123
   Support:   163
 
 Lower_risk:
   Precision: 0.905
-  Recall:    0.996
-  F1-Score:  0.948
+  Recall:    0.997
+  F1-Score:  0.949
   Support:   1460
 
 ----------------------------------------------------------------------
-Overall Accuracy: 90.26%
+Overall Accuracy: 90.33%
 ======================================================================
