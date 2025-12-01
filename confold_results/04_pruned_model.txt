@@ -1,0 +1,20 @@
+PRUNED MODEL
+==================================================
+
+RULES:
+extinction_risk(X,'lower_risk') :- rule1(X).
+extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
+extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
+extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
+extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
+rule1(X) :- biological_use_hunting(X,'0'). [confidence: 0.96728]
+rule2(X) :- range_size(X,N32), N32>697.48. [confidence: 0.67091]
+rule3(X) :- beak_depth(X,N8), N8>3.9. [confidence: 0.86264]
+rule4(X) :- range_size(X,N32), N32<=255.12. [confidence: 0.70455]
+rule5(X) :- beak_length_culmen(X,N7), N7>13.9. [confidence: 0.75]
+rule6(X) :- not agriculture(X,'0'). [confidence: 0.65385]
+rule7(X) :- agriculture(X,'0'). [confidence: 0.55]
+
+Accuracy: 90.26%

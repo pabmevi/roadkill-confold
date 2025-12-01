@@ -1,0 +1,26 @@
+EXPERT MODEL (With Confidence)
+==================================================
+
+RULES:
+extinction_risk(X,'higher_risk') :- rule1(X).
+extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
+extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
+extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
+extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
+extinction_risk(X,'lower_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
+extinction_risk(X,'lower_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
+extinction_risk(X,'higher_risk') :- rule10(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X).
+rule1(X) :- range_size(X,N32), N32<=130822. [confidence: 0.9]
+rule2(X) :- range_size(X,N32), N32>3325231. [confidence: 0.9]
+rule3(X) :- agriculture(X,N0), N0>1. [confidence: 0.9]
+rule4(X) :- invasive_species(X,N4), N4>1. [confidence: 0.9]
+rule5(X) :- biological_use_hunting(X,N3), N3>1. [confidence: 0.9]
+rule6(X) :- human_population_density(X,N29), N29>500. [confidence: 0.8]
+rule7(X) :- maximum_latitude(X,N14), N14<=-50.0. [confidence: 0.8]
+rule8(X) :- night_lights(X,N28), N28>2.5, night_lights(X,N28), N28<=5. [confidence: 0.8]
+rule9(X) :- beak_length_culmen(X,N7), N7<=180.2. [confidence: 0.99501]
+rule10(X) :- agriculture(X,'0'). [confidence: 0.59091]
+
+Accuracy: 73.57%

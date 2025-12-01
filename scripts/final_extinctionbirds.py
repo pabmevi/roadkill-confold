@@ -94,9 +94,37 @@ accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels[i] == Y_test[i]
 os.makedirs('confold_results', exist_ok=True)
 with open('confold_results/01_baseline.txt', 'w') as f:
     baseline_model.asp()
-    f.write("BASELINE MODEL\n" + "="*50 + "\n\n")
-    f.write("RULES:\n" + "\n".join(baseline_model.asp_rules) + "\n\n")
-    f.write(f"Accuracy: {accuracy * 100:.2f}%\n")
+    f.write("BASELINE MODEL\n" + "="*70 + "\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(baseline_model.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in predicted_labels]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {accuracy * 100:.2f}%\n" + "="*70 + "\n")
 
 # Instantiate a new classifier for our expert-guided model
 expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
@@ -151,9 +179,37 @@ print(f"Accuracy: {expert_accuracy * 100:.2f}%")
 # EXPERT WITH CONFIDENCE
 with open('confold_results/02_expert_with_confidence.txt', 'w') as f:
     expert_model.asp()
-    f.write("EXPERT MODEL (With Confidence)\n" + "="*50 + "\n\n")
-    f.write("RULES:\n" + "\n".join(expert_model.asp_rules) + "\n\n")
-    f.write(f"Accuracy: {expert_accuracy * 100:.2f}%\n")
+    f.write("EXPERT MODEL (With Confidence)\n" + "="*70 + "\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(expert_model.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in expert_predicted_labels]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {expert_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 
 # Store predictions so we can print confusion matrices at the end of the script
 all_predictions = {}
@@ -211,9 +267,37 @@ print(f"Accuracy: {learned_conf_accuracy * 100:.2f}%")
 # LEARNED CONFIDENCE
 with open('confold_results/03_expert_learned_confidence.txt', 'w') as f:
     learned_confidence_model.asp()
-    f.write("EXPERT MODEL (Learned Confidence)\n" + "="*50 + "\n\n")
-    f.write("RULES:\n" + "\n".join(learned_confidence_model.asp_rules) + "\n\n")
-    f.write(f"Accuracy: {learned_conf_accuracy * 100:.2f}%\n")
+    f.write("EXPERT MODEL (Learned Confidence)\n" + "="*70 + "\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(learned_confidence_model.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in learned_conf_labels]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {learned_conf_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 
 # Keep learned-confidence predictions too (this is the expert rules without an explicit confidence)
 all_predictions['expert_no_confidence'] = learned_conf_labels
@@ -264,9 +348,37 @@ advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_advanc
 # PRUNED MODEL
 with open('confold_results/04_pruned_model.txt', 'w') as f:
     advanced_pruning_model.asp()
-    f.write("PRUNED MODEL\n" + "="*50 + "\n\n")
-    f.write("RULES:\n" + "\n".join(advanced_pruning_model.asp_rules) + "\n\n")
-    f.write(f"Accuracy: {advanced_accuracy * 100:.2f}%\n")
+    f.write("PRUNED MODEL\n" + "="*70 + "\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(advanced_pruning_model.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in predicted_labels_advanced]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {advanced_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 
 # ------------------ Consolidated Confusion Matrices (end of script) ------------------
 def _norm_label(x):
