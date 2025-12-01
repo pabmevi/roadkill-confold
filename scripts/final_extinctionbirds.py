@@ -432,6 +432,7 @@ Y_test_norm = [_norm_label(y) for y in Y_test]
 for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
                      ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
+                     ('Simple pruning', all_predictions.get('simple_pruning')),
                      ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
     if y_pred is None:
         continue
