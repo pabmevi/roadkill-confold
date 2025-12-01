@@ -325,7 +325,7 @@ simple_pruned_model.print_asp(simple=True)
 predictions_simple_pruned = simple_pruned_model.predict(X_test)
 predicted_labels_simple_pruned = [p[0] for p in predictions_simple_pruned]
 # Store predictions
-all_predictions['simple_pruned'] = predicted_labels_simple_pruned
+all_predictions['simple_pruning'] = predicted_labels_simple_pruned
 # Calculate accuracy
 simple_pruned_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_simple_pruned[i] == Y_test[i]) / len(Y_test)
 
