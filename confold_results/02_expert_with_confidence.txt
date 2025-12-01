@@ -1,7 +1,8 @@
 EXPERT MODEL (With Confidence)
-==================================================
+======================================================================
 
 RULES:
+----------------------------------------------------------------------
 extinction_risk(X,'higher_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
@@ -23,4 +24,29 @@ rule8(X) :- night_lights(X,N28), N28>2.5, night_lights(X,N28), N28<=5. [confiden
 rule9(X) :- beak_length_culmen(X,N7), N7<=180.2. [confidence: 0.99501]
 rule10(X) :- agriculture(X,'0'). [confidence: 0.59091]
 
-Accuracy: 73.57%
+======================================================================
+PERFORMANCE METRICS
+======================================================================
+
+Confusion Matrix:
+                 PRED:Higher_risk PRED:Lower_risk
+TRUE:Higher_risk              147              16
+ TRUE:Lower_risk              413            1047
+
+Per-class Metrics:
+----------------------------------------------------------------------
+Higher_risk:
+  Precision: 0.263
+  Recall:    0.902
+  F1-Score:  0.407
+  Support:   163
+
+Lower_risk:
+  Precision: 0.985
+  Recall:    0.717
+  F1-Score:  0.830
+  Support:   1460
+
+----------------------------------------------------------------------
+Overall Accuracy: 73.57%
+======================================================================

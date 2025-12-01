@@ -1,7 +1,8 @@
 PRUNED MODEL
-==================================================
+======================================================================
 
 RULES:
+----------------------------------------------------------------------
 extinction_risk(X,'lower_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
@@ -17,4 +18,29 @@ rule5(X) :- beak_length_culmen(X,N7), N7>13.9. [confidence: 0.75]
 rule6(X) :- not agriculture(X,'0'). [confidence: 0.65385]
 rule7(X) :- agriculture(X,'0'). [confidence: 0.55]
 
-Accuracy: 90.26%
+======================================================================
+PERFORMANCE METRICS
+======================================================================
+
+Confusion Matrix:
+                 PRED:Higher_risk PRED:Lower_risk
+TRUE:Higher_risk               11             152
+ TRUE:Lower_risk                6            1454
+
+Per-class Metrics:
+----------------------------------------------------------------------
+Higher_risk:
+  Precision: 0.647
+  Recall:    0.067
+  F1-Score:  0.122
+  Support:   163
+
+Lower_risk:
+  Precision: 0.905
+  Recall:    0.996
+  F1-Score:  0.948
+  Support:   1460
+
+----------------------------------------------------------------------
+Overall Accuracy: 90.26%
+======================================================================

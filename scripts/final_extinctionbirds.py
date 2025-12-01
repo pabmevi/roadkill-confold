@@ -310,18 +310,18 @@ expert_model.print_asp(simple=True)
 
 # Method 1: Simple Post-Hoc Confidence Pruning: removing those rules with a low confidence according to me
 # Import the prune_rules function from the core algorithm file
-#from algo import prune_rules
+from algo import prune_rules
 
 # Apply the pruning function
 # This will create a new list containing only the rules that meet the confidence threshold.
-#pruned_rules = prune_rules(expert_model.rules, confidence=0.90)
+pruned_rules = prune_rules(expert_model.rules, confidence=0.90)
 
 # We can create a new model instance to hold these pruned rules
-#simple_pruned_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
-#simple_pruned_model.rules = pruned_rules
+simple_pruned_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+simple_pruned_model.rules = pruned_rules
 
-#print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
-#simple_pruned_model.print_asp(simple=True)
+print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
+simple_pruned_model.print_asp(simple=True)
             
 # Instantiate a new model for this experiment
 advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)

@@ -1,7 +1,8 @@
 BASELINE MODEL
-==================================================
+======================================================================
 
 RULES:
+----------------------------------------------------------------------
 extinction_risk(X,'lower_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
@@ -66,4 +67,29 @@ ab35(X) :- hand_wing_index(X,N11), N11>39.8.
 ab36(X) :- tarsus_length(X,N9), N9<=21.6.
 ab37(X) :- not realm(X,'l'), range_size(X,N32), N32>157651.99, not ab36(X).
 
-Accuracy: 91.62%
+======================================================================
+PERFORMANCE METRICS
+======================================================================
+
+Confusion Matrix:
+                 PRED:Higher_risk PRED:Lower_risk
+TRUE:Higher_risk               60             103
+ TRUE:Lower_risk               33            1427
+
+Per-class Metrics:
+----------------------------------------------------------------------
+Higher_risk:
+  Precision: 0.645
+  Recall:    0.368
+  F1-Score:  0.469
+  Support:   163
+
+Lower_risk:
+  Precision: 0.933
+  Recall:    0.977
+  F1-Score:  0.955
+  Support:   1460
+
+----------------------------------------------------------------------
+Overall Accuracy: 91.62%
+======================================================================
