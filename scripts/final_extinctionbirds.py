@@ -342,7 +342,7 @@ simple_pruned_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_s
 # GUARDAR SIMPLE PRUNED MODEL
 with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
     simple_pruned_model.asp()
-    f.write("SIMPLE PRUNED MODEL (Confidence >= 0.90)\n" + "="*70 + "\n\n")
+    f.write("SIMPLE PRUNING (Confidence >= 0.90)\n" + "="*70 + "\n\n")
     f.write("RULES:\n" + "-"*70 + "\n")
     f.write("\n".join(simple_pruned_model.asp_rules) + "\n\n")
     
@@ -392,10 +392,10 @@ all_predictions['advanced_pruning'] = predicted_labels_advanced
 # Print evaluation for advanced pruning model
 advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_advanced[i] == Y_test[i]) / len(Y_test)
 
-# ADVANCED PRUNED MODEL
-with open('confold_results/05_advanced_pruning.txt', 'w') as f:
+# PRUNED MODEL
+with open('confold_results/05_advanced_pruning_model.txt', 'w') as f:
     advanced_pruning_model.asp()
-    f.write("ADVANCED PRUNED MODEL\n" + "="*70 + "\n\n")
+    f.write("ADVANCED PRUNING\n" + "="*70 + "\n\n")
     f.write("RULES:\n" + "-"*70 + "\n")
     f.write("\n".join(advanced_pruning_model.asp_rules) + "\n\n")
     
@@ -439,8 +439,7 @@ Y_test_norm = [_norm_label(y) for y in Y_test]
 
 for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
-                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence'))
-                     ('Simple Pruning', all_predictions.get('simple_pruned')),
+                     ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
                      ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
     if y_pred is None:
         continue
