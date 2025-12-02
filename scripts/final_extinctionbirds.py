@@ -330,9 +330,9 @@ all_predictions['simple_pruning'] = predicted_labels_simple_pruned
 simple_pruned_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_simple_pruned[i] == Y_test[i]) / len(Y_test)
 
 # GUARDAR SIMPLE PRUNED MODEL
-with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
+with open('confold_results/04_simple_pruned_model_expert_confidence.txt', 'w') as f:
     simple_pruned_model.asp()
-    f.write("SIMPLE PRUNING (Confidence >= 0.90)\n" + "="*70 + "\n\n")
+    f.write("SIMPLE PRUNING TO EXPERT WITH CONFIDENCE (Confidence >= 0.90)\n" + "="*70 + "\n\n")
     f.write("RULES:\n" + "-"*70 + "\n")
     f.write("\n".join(simple_pruned_model.asp_rules) + "\n\n")
     
@@ -363,6 +363,64 @@ with open('confold_results/04_simple_pruned_model.txt', 'w') as f:
         f.write(f"  Support:   {m['support']}\n\n")
     
     f.write("-"*70 + f"\nOverall Accuracy: {simple_pruned_accuracy * 100:.2f}%\n" + "="*70 + "\n")
+    
+# Method 1.1: Simple Post-Hoc Confidence Pruning from the baseline model
+
+# Apply the pruning function
+# This will create a new list containing only the rules that meet the confidence threshold.
+pruned_rules_baseline = prune_rules(expert_model.rules, confidence=0.80)
+
+# We can create a new model instance to hold these pruned rules
+simple_pruned_model_baseline = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
+simple_pruned_model_baseline.rules = pruned_rules_baseline
+print("\n--- Rules After Pruning (Confidence >= 0.90) ---")
+simple_pruned_model_baseline.print_asp(simple=True)
+            
+# === Predictions for Simple Pruned Model ===
+predictions_simple_pruned_baseline = simple_pruned_model_baseline.predict(X_test)
+predicted_labels_simple_pruned_baseline = [p[0] for p in predictions_simple_pruned_baseline]
+# Store predictions
+all_predictions['simple_pruning_baseline'] = predicted_labels_simple_pruned_baseline
+# Calculate accuracy
+simple_pruned_baseline_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_simple_pruned_baseline[i] == Y_test[i]) / len(Y_test)
+
+# GUARDAR SIMPLE PRUNED MODEL
+with open('confold_results/05_simple_pruned_model_baseline.txt', 'w') as f:
+    simple_pruned_model_baseline.asp()
+    f.write("SIMPLE PRUNING TO BASELINE (Confidence >= 0.90)\n" + "="*70 + "\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(simple_pruned_model_baseline.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in predicted_labels_simple_pruned_baseline]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {simple_pruned_baseline_accuracy * 100:.2f}%\n" + "="*70 + "\n")   
+    
+    
+    
 ##################
 #### Method 2: Advanced Confidence-Driven Learning
 # Instantiate a new model for this experiment
