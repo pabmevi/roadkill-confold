@@ -132,12 +132,12 @@ expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_templ
 # Define our expert rules as strings
 rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '130822'" #This is the value of the 1st quartil of the data
 rule2 = "with confidence 0.90 class = 'Lower_risk' if 'Range_size' '>=' '3325231'" #This is the value of the 3rd quartil of the data
-rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '==' '1'"
-rule4 = "with confidence 0.90 class = 'Higher_risk' if 'Invasive_species' '==' '1'"
-rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Biological_use_hunting' '==' '1'"
-rule6 = "with confidence 0.80 class = 'Higher_risk' if 'Human_population_density' '>=' '500'"
-rule7 = "with confidence 0.80 class = 'Higher_risk' if 'Maximum_latitude' '<=' '-50'"
-rule8 = "with confidence 0.80 class = 'Lower_risk' if 'Night_lights' '>=' '2.5' and 'Night_lights' '<=' '5'"
+#rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '==' '1'"
+#rule4 = "with confidence 0.90 class = 'Higher_risk' if 'Invasive_species' '==' '1'"
+#rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Biological_use_hunting' '==' '1'"
+rule3 = "with confidence 0.80 class = 'Higher_risk' if 'Human_population_density' '>=' '500'"
+rule4 = "with confidence 0.80 class = 'Higher_risk' if 'Maximum_latitude' '<=' '-50'"
+rule5 = "with confidence 0.80 class = 'Lower_risk' if 'Night_lights' '>=' '2.5' and 'Night_lights' '<=' '5'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -145,9 +145,9 @@ expert_model.add_manual_rule(rule2, model_template.attrs, model_template.numeric
 expert_model.add_manual_rule(rule3, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule4, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule5, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule6, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule7, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#expert_model.add_manual_rule(rule6, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#expert_model.add_manual_rule(rule7, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added to the Model (Before Training) ---")
 for rule in expert_model.rules:
@@ -221,12 +221,12 @@ learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
 rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '130822'"
 rule2_no_confidence = "class = 'Lower_risk' if 'Range_size' '>=' '3325231'"
-rule3_no_confidence = "class = 'Higher_risk' if 'Agriculture' '==' '1'"
-rule4_no_confidence = "class = 'Higher_risk' if 'Invasive_species' '==' '1'"
-rule5_no_confidence = "class = 'Higher_risk' if 'Biological_use_hunting' '==' '1'"
-rule6_no_confidence = "class = 'Higher_risk' if 'Human_population_density' '>=' '500'"
-rule7_no_confidence = "class = 'Higher_risk' if 'Maximum_latitude' '<=' '-50'"
-rule8_no_confidence = "class = 'Lower_risk' if 'Night_lights' '>=' '2.5' and 'Night_lights' '<=' '5'"
+#rule3_no_confidence = "class = 'Higher_risk' if 'Agriculture' '==' '1'"
+#rule4_no_confidence = "class = 'Higher_risk' if 'Invasive_species' '==' '1'"
+#rule5_no_confidence = "class = 'Higher_risk' if 'Biological_use_hunting' '==' '1'"
+rule3_no_confidence = "class = 'Higher_risk' if 'Human_population_density' '>=' '500'"
+rule4_no_confidence = "class = 'Higher_risk' if 'Maximum_latitude' '<=' '-50'"
+rule5_no_confidence = "class = 'Lower_risk' if 'Night_lights' '>=' '2.5' and 'Night_lights' '<=' '5'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -234,9 +234,9 @@ learned_confidence_model.add_manual_rule(rule2_no_confidence, model_template.att
 learned_confidence_model.add_manual_rule(rule3_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule4_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule5_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-learned_confidence_model.add_manual_rule(rule6_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-learned_confidence_model.add_manual_rule(rule7_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-learned_confidence_model.add_manual_rule(rule8_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#learned_confidence_model.add_manual_rule(rule6_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#learned_confidence_model.add_manual_rule(rule7_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+#learned_confidence_model.add_manual_rule(rule8_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added (Before Training) ---")
 print("Notice the default confidence value of 0.5 assigned to each rule.")
