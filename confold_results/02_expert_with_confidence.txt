@@ -7,22 +7,32 @@ extinction_risk(X,'higher_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
-extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
-extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
-extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
-extinction_risk(X,'lower_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
-extinction_risk(X,'lower_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
-extinction_risk(X,'higher_risk') :- rule10(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X).
-rule1(X) :- range_size(X,N32), N32<=130822. [confidence: 0.9]
-rule2(X) :- range_size(X,N32), N32>3325231. [confidence: 0.9]
-rule3(X) :- agriculture(X,N0), N0>1. [confidence: 0.9]
-rule4(X) :- invasive_species(X,N4), N4>1. [confidence: 0.9]
-rule5(X) :- biological_use_hunting(X,N3), N3>1. [confidence: 0.9]
-rule6(X) :- human_population_density(X,N29), N29>500. [confidence: 0.8]
-rule7(X) :- maximum_latitude(X,N14), N14<=-50.0. [confidence: 0.8]
-rule8(X) :- night_lights(X,N28), N28>2.5, night_lights(X,N28), N28<=5. [confidence: 0.8]
-rule9(X) :- beak_length_culmen(X,N7), N7<=180.2. [confidence: 0.99501]
-rule10(X) :- agriculture(X,'0'). [confidence: 0.59091]
+extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
+extinction_risk(X,'higher_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
+extinction_risk(X,'higher_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
+rule1(X) :- range_size(X,N26), N26<=130822. [confidence: 0.9]
+rule2(X) :- range_size(X,N26), N26>3325231. [confidence: 0.9]
+rule3(X) :- human_population_density(X,N23), N23>500. [confidence: 0.8]
+rule4(X) :- maximum_latitude(X,N8), N8<=-50.0. [confidence: 0.8]
+rule5(X) :- night_lights(X,N22), N22>2.5, night_lights(X,N22), N22<=5. [confidence: 0.8]
+rule6(X) :- generation_length(X,N18), N18<=5.77786, not ab3(X), not ab5(X), not ab6(X), not ab7(X), not ab8(X). [confidence: 0.99519]
+rule7(X) :- generation_length(X,N18), N18>5.5275, not ab12(X). [confidence: 0.79586]
+rule8(X) :- not primary_lifestyle(X,'aerial'). [confidence: 0.87838]
+rule9(X) :- primary_lifestyle(X,'aerial'). [confidence: 0.59091]
+ab1(X) :- wing_length(X,N4), N4>171.2.
+ab2(X) :- beak_length_culmen(X,N1), N1<=20.4.
+ab3(X) :- order(X,'charadriiformes'), territoriality(X,'none'), elevational_range(X,N13), N13<=1200.0, not ab1(X), not ab2(X).
+ab4(X) :- beak_length_culmen(X,N1), N1<=13.1.
+ab5(X) :- territoriality(X,'weak'), beak_depth(X,N2), N2>5.4, diet_breadth(X,N16), N16<=1.0, night_lights(X,N22), N22>2.45445, not ab4(X).
+ab6(X) :- order(X,'podicipediformes').
+ab7(X) :- order(X,'procellariiformes').
+ab8(X) :- family(X,'charadriidae'), realm(X,'ip').
+ab9(X) :- elevational_range(X,N13), N13>1100.0.
+ab10(X) :- elevational_range(X,N13), N13<=0.0.
+ab11(X) :- habitat(X,'desert').
+ab12(X) :- wing_length(X,N4), N4>420.2, not ab9(X), not ab10(X), not ab11(X).
 
 ======================================================================
 PERFORMANCE METRICS
@@ -30,23 +40,23 @@ PERFORMANCE METRICS
 
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk              147              16
- TRUE:Lower_risk              413            1047
+TRUE:Higher_risk              108              55
+ TRUE:Lower_risk              309            1151
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.263
-  Recall:    0.902
-  F1-Score:  0.407
+  Precision: 0.259
+  Recall:    0.663
+  F1-Score:  0.372
   Support:   163
 
 Lower_risk:
-  Precision: 0.985
-  Recall:    0.717
-  F1-Score:  0.830
+  Precision: 0.954
+  Recall:    0.788
+  F1-Score:  0.863
   Support:   1460
 
 ----------------------------------------------------------------------
-Overall Accuracy: 73.57%
+Overall Accuracy: 77.57%
 ======================================================================

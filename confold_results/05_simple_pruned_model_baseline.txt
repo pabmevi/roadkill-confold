@@ -1,4 +1,4 @@
-EXPERT MODEL (Learned Confidence)
+SIMPLE PRUNING TO BASELINE (Confidence >= 0.90)
 ======================================================================
 
 RULES:
@@ -9,18 +9,14 @@ extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
 extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
 extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
-extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
-extinction_risk(X,'higher_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
-extinction_risk(X,'higher_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
-rule1(X) :- range_size(X,N26), N26<=130822. [confidence: 0.25138]
-rule2(X) :- range_size(X,N26), N26>3325231. [confidence: 0.95115]
-rule3(X) :- human_population_density(X,N23), N23>500. [confidence: 0.3125]
-rule4(X) :- maximum_latitude(X,N8), N8<=-50.0. [confidence: 0.5]
-rule5(X) :- night_lights(X,N22), N22>2.5, night_lights(X,N22), N22<=5. [confidence: 0.94763]
+extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
+rule1(X) :- range_size(X,N26), N26<=130822. [confidence: 0.9]
+rule2(X) :- range_size(X,N26), N26>3325231. [confidence: 0.9]
+rule3(X) :- human_population_density(X,N23), N23>500. [confidence: 0.8]
+rule4(X) :- maximum_latitude(X,N8), N8<=-50.0. [confidence: 0.8]
+rule5(X) :- night_lights(X,N22), N22>2.5, night_lights(X,N22), N22<=5. [confidence: 0.8]
 rule6(X) :- generation_length(X,N18), N18<=5.77786, not ab3(X), not ab5(X), not ab6(X), not ab7(X), not ab8(X). [confidence: 0.99519]
-rule7(X) :- generation_length(X,N18), N18>5.5275, not ab12(X). [confidence: 0.79586]
-rule8(X) :- not primary_lifestyle(X,'aerial'). [confidence: 0.87838]
-rule9(X) :- primary_lifestyle(X,'aerial'). [confidence: 0.59091]
+rule7(X) :- not primary_lifestyle(X,'aerial'). [confidence: 0.87838]
 ab1(X) :- wing_length(X,N4), N4>171.2.
 ab2(X) :- beak_length_culmen(X,N1), N1<=20.4.
 ab3(X) :- order(X,'charadriiformes'), territoriality(X,'none'), elevational_range(X,N13), N13<=1200.0, not ab1(X), not ab2(X).
@@ -29,34 +25,37 @@ ab5(X) :- territoriality(X,'weak'), beak_depth(X,N2), N2>5.4, diet_breadth(X,N16
 ab6(X) :- order(X,'podicipediformes').
 ab7(X) :- order(X,'procellariiformes').
 ab8(X) :- family(X,'charadriidae'), realm(X,'ip').
-ab9(X) :- elevational_range(X,N13), N13>1100.0.
-ab10(X) :- elevational_range(X,N13), N13<=0.0.
-ab11(X) :- habitat(X,'desert').
-ab12(X) :- wing_length(X,N4), N4>420.2, not ab9(X), not ab10(X), not ab11(X).
 
 ======================================================================
 PERFORMANCE METRICS
 ======================================================================
 
 Confusion Matrix:
-                 PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk              108              55
- TRUE:Lower_risk              309            1151
+                 PRED:Higher_risk PRED:Lower_risk PRED:None
+TRUE:Higher_risk              114              47         2
+ TRUE:Lower_risk              338            1122         0
+       TRUE:None                0               0         0
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.259
-  Recall:    0.663
-  F1-Score:  0.372
+  Precision: 0.252
+  Recall:    0.699
+  F1-Score:  0.371
   Support:   163
 
 Lower_risk:
-  Precision: 0.954
-  Recall:    0.788
-  F1-Score:  0.863
+  Precision: 0.960
+  Recall:    0.768
+  F1-Score:  0.854
   Support:   1460
 
+None:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   0
+
 ----------------------------------------------------------------------
-Overall Accuracy: 77.57%
+Overall Accuracy: 76.16%
 ======================================================================

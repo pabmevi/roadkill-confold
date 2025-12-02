@@ -8,15 +8,11 @@ extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
 extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
-extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
-extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
-rule1(X) :- biological_use_hunting(X,'0'). [confidence: 0.96728]
-rule2(X) :- range_size(X,N32), N32>697.48. [confidence: 0.67091]
-rule3(X) :- beak_depth(X,N8), N8>3.9. [confidence: 0.86264]
-rule4(X) :- range_size(X,N32), N32<=255.12. [confidence: 0.70455]
-rule5(X) :- beak_length_culmen(X,N7), N7>13.9. [confidence: 0.75]
-rule6(X) :- not agriculture(X,'0'). [confidence: 0.65385]
-rule7(X) :- agriculture(X,'0'). [confidence: 0.55]
+rule1(X) :- range_size(X,N26), N26>8886.61. [confidence: 0.93454]
+rule2(X) :- generation_length(X,N18), N18<=5.24092, range_size(X,N26), N26>347.89. [confidence: 0.70795]
+rule3(X) :- minimum_latitude(X,N7), N7<=11.99. [confidence: 0.6882]
+rule4(X) :- body_mass(X,N27), N27>6.8. [confidence: 0.90299]
+rule5(X) :- primary_lifestyle(X,'insessorial'). [confidence: 0.59091]
 
 ======================================================================
 PERFORMANCE METRICS
@@ -24,23 +20,23 @@ PERFORMANCE METRICS
 
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk               11             152
- TRUE:Lower_risk                6            1454
+TRUE:Higher_risk               32             131
+ TRUE:Lower_risk               21            1439
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.647
-  Recall:    0.067
-  F1-Score:  0.122
+  Precision: 0.604
+  Recall:    0.196
+  F1-Score:  0.296
   Support:   163
 
 Lower_risk:
-  Precision: 0.905
-  Recall:    0.996
-  F1-Score:  0.948
+  Precision: 0.917
+  Recall:    0.986
+  F1-Score:  0.950
   Support:   1460
 
 ----------------------------------------------------------------------
-Overall Accuracy: 90.26%
+Overall Accuracy: 90.63%
 ======================================================================
