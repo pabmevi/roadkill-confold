@@ -8,11 +8,13 @@ extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
 extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
-rule1(X) :- range_size(X,N26), N26>8886.61. [confidence: 0.93454]
-rule2(X) :- generation_length(X,N18), N18<=5.24092, range_size(X,N26), N26>347.89. [confidence: 0.70795]
-rule3(X) :- minimum_latitude(X,N7), N7<=11.99. [confidence: 0.6882]
-rule4(X) :- body_mass(X,N27), N27>6.8. [confidence: 0.90299]
-rule5(X) :- primary_lifestyle(X,'insessorial'). [confidence: 0.59091]
+extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+rule1(X) :- range_size(X,N25), N25>8886.61. [confidence: 0.93454]
+rule2(X) :- generation_length(X,N17), N17<=5.24092, range_size(X,N25), N25>347.89. [confidence: 0.70795]
+rule3(X) :- minimum_latitude(X,N6), N6<=11.99. [confidence: 0.6882]
+rule4(X) :- body_mass(X,N26), N26>6.8. [confidence: 0.90299]
+rule5(X) :- beak_length_culmen(X,N0), N0<=12.0. [confidence: 0.55]
+rule6(X) :- beak_length_culmen(X,N0), N0<=13.0. [confidence: 0.55]
 
 ======================================================================
 PERFORMANCE METRICS

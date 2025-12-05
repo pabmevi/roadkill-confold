@@ -10,35 +10,34 @@ extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not ru
 extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
 extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
 extinction_risk(X,'lower_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
-rule1(X) :- range_size(X,N26), N26>8886.61, not ab1(X), not ab2(X), not ab3(X), not ab7(X). [confidence: 0.94294]
-rule2(X) :- generation_length(X,N18), N18>5.24092. [confidence: 0.84091]
-rule3(X) :- range_size(X,N26), N26>347.89. [confidence: 0.70795]
-rule4(X) :- minimum_latitude(X,N7), N7<=18.34, not ab8(X), not ab9(X), not ab12(X). [confidence: 0.81429]
-rule5(X) :- minimum_latitude(X,N7), N7>18.34. [confidence: 0.85]
-rule6(X) :- primary_lifestyle(X,'insessorial'). [confidence: 0.82692]
-rule7(X) :- primary_lifestyle(X,'terrestrial'). [confidence: 0.625]
-ab1(X) :- beak_depth(X,N2), N2<=45.1, minimum_latitude(X,N7), N7>27.86, maximum_latitude(X,N8), N8<=71.8, generation_length(X,N18), N18>5.1951, body_mass(X,N27), N27>2117.7, clutch_size(X,N28), N28<=4.0.
-ab2(X) :- order(X,'charadriiformes'), beak_length_culmen(X,N1), N1<=44.5, adult_survival_annual(X,N17), N17<=0.84484, generation_length(X,N18), N18>9.18255.
-ab3(X) :- beak_depth(X,N2), N2>43.1, generation_length(X,N18), N18>5.1951, body_mass(X,N27), N27>2117.7, clutch_size(X,N28), N28<=3.0.
-ab4(X) :- primary_lifestyle(X,'aerial').
-ab5(X) :- hand_wing_index(X,N5), N5>34.5, human_population_density(X,N23), N23<=12.8.
-ab6(X) :- beak_length_culmen(X,N1), N1>28.7, body_mass(X,N27), N27<=416.0.
-ab7(X) :- beak_depth(X,N2), N2>19.3, generation_length(X,N18), N18>5.1951, range_size(X,N26), N26<=80802.25, not ab4(X), not ab5(X), not ab6(X).
-ab8(X) :- wing_length(X,N4), N4<=73.0, tail_length(X,N6), N6>60.4.
-ab9(X) :- diet_breadth(X,N16), N16<=1.0, adult_survival_annual(X,N17), N17<=0.59147.
-ab10(X) :- minimum_elevation(X,N12), N12>20.0.
-ab11(X) :- minimum_latitude(X,N7), N7>5.5.
-ab12(X) :- hand_wing_index(X,N5), N5<=22.2, diet_breadth(X,N16), N16>3.0, not ab10(X), not ab11(X).
+rule1(X) :- range_size(X,N25), N25>8886.61, not ab1(X), not ab2(X), not ab3(X), not ab7(X). [confidence: 0.94294]
+rule2(X) :- generation_length(X,N17), N17>5.24092. [confidence: 0.84091]
+rule3(X) :- range_size(X,N25), N25>347.89. [confidence: 0.70795]
+rule4(X) :- minimum_latitude(X,N6), N6<=18.34, not ab8(X), not ab9(X), not ab12(X). [confidence: 0.81429]
+rule5(X) :- minimum_latitude(X,N6), N6>18.34. [confidence: 0.85]
+rule6(X) :- beak_length_culmen(X,N0), N0>12.0. [confidence: 0.83929]
+rule7(X) :- beak_length_culmen(X,N0), N0<=12.0. [confidence: 0.55]
+ab1(X) :- beak_depth(X,N1), N1<=45.1, minimum_latitude(X,N6), N6>27.86, maximum_latitude(X,N7), N7<=71.8, generation_length(X,N17), N17>5.1951, body_mass(X,N26), N26>2117.7, clutch_size(X,N27), N27<=4.0.
+ab2(X) :- order(X,'charadriiformes'), beak_length_culmen(X,N0), N0<=44.5, adult_survival_annual(X,N16), N16<=0.84484, generation_length(X,N17), N17>9.18255.
+ab3(X) :- beak_depth(X,N1), N1>43.1, generation_length(X,N17), N17>5.1951, body_mass(X,N26), N26>2117.7, clutch_size(X,N27), N27<=3.0.
+ab4(X) :- hand_wing_index(X,N4), N4>45.9.
+ab5(X) :- hand_wing_index(X,N4), N4>34.5, human_population_density(X,N22), N22<=12.8.
+ab6(X) :- beak_length_culmen(X,N0), N0>28.7, body_mass(X,N26), N26<=416.0.
+ab7(X) :- beak_depth(X,N1), N1>19.3, generation_length(X,N17), N17>5.1951, range_size(X,N25), N25<=80802.25, not ab4(X), not ab5(X), not ab6(X).
+ab8(X) :- wing_length(X,N3), N3<=73.0, tail_length(X,N5), N5>60.4.
+ab9(X) :- diet_breadth(X,N15), N15<=1.0, adult_survival_annual(X,N16), N16<=0.59147.
+ab10(X) :- minimum_elevation(X,N11), N11>20.0.
+ab11(X) :- minimum_latitude(X,N6), N6>5.5.
+ab12(X) :- hand_wing_index(X,N4), N4<=22.2, diet_breadth(X,N15), N15>3.0, not ab10(X), not ab11(X).
 
 ======================================================================
 PERFORMANCE METRICS
 ======================================================================
 
 Confusion Matrix:
-                 PRED:Higher_risk PRED:Lower_risk PRED:None
-TRUE:Higher_risk               33             128         2
- TRUE:Lower_risk               22            1438         0
-       TRUE:None                0               0         0
+                 PRED:Higher_risk PRED:Lower_risk
+TRUE:Higher_risk               33             130
+ TRUE:Lower_risk               22            1438
 
 Per-class Metrics:
 ----------------------------------------------------------------------
@@ -49,16 +48,10 @@ Higher_risk:
   Support:   163
 
 Lower_risk:
-  Precision: 0.918
+  Precision: 0.917
   Recall:    0.985
   F1-Score:  0.950
   Support:   1460
-
-None:
-  Precision: 0.000
-  Recall:    0.000
-  F1-Score:  0.000
-  Support:   0
 
 ----------------------------------------------------------------------
 Overall Accuracy: 90.63%
