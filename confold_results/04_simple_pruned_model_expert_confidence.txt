@@ -7,24 +7,23 @@ extinction_risk(X,'higher_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
-extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
 extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
 extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
 rule1(X) :- range_size(X,N25), N25<=130822. [confidence: 0.9]
 rule2(X) :- range_size(X,N25), N25>3325231. [confidence: 0.9]
 rule3(X) :- human_population_density(X,N22), N22>500. [confidence: 0.8]
-rule4(X) :- maximum_latitude(X,N7), N7<=-50.0. [confidence: 0.8]
-rule5(X) :- night_lights(X,N21), N21>2.5, night_lights(X,N21), N21<=5. [confidence: 0.8]
-rule6(X) :- generation_length(X,N17), N17<=5.77786, not ab3(X), not ab5(X), not ab6(X), not ab7(X), not ab8(X). [confidence: 0.99519]
-rule7(X) :- beak_length_culmen(X,N0), N0>14.1. [confidence: 0.88158]
-ab1(X) :- wing_length(X,N3), N3>171.2.
-ab2(X) :- beak_length_culmen(X,N0), N0<=20.4.
-ab3(X) :- order(X,'charadriiformes'), territoriality(X,'none'), elevational_range(X,N12), N12<=1200.0, not ab1(X), not ab2(X).
-ab4(X) :- beak_length_culmen(X,N0), N0<=13.1.
-ab5(X) :- territoriality(X,'weak'), beak_depth(X,N1), N1>5.4, diet_breadth(X,N15), N15<=1.0, night_lights(X,N21), N21>2.45445, not ab4(X).
-ab6(X) :- order(X,'podicipediformes').
-ab7(X) :- order(X,'procellariiformes').
-ab8(X) :- family(X,'charadriidae'), realm(X,'ip').
+rule4(X) :- generation_length(X,N17), N17>4. [confidence: 0.8]
+rule5(X) :- body_mass(X,N26), N26>149. [confidence: 0.8]
+rule6(X) :- minimum_latitude(X,N6), N6<=44.5, not ab2(X), not ab3(X), not ab4(X), not ab5(X), not ab6(X), not ab7(X). [confidence: 0.98635]
+rule7(X) :- minimum_latitude(X,N6), N6<=44.84. [confidence: 0.83929]
+ab1(X) :- tail_length(X,N5), N5<=49.0.
+ab2(X) :- wing_length(X,N3), N3>102.0, hand_wing_index(X,N4), N4>30.6, range_size(X,N25), N25<=284991.46, clutch_size(X,N27), N27>4.0, not ab1(X).
+ab3(X) :- migration(X,'partiallymigratory'), maximum_latitude(X,N7), N7<=-14.01, night_lights(X,N21), N21>3.05747, range_size(X,N25), N25<=186188.74.
+ab4(X) :- foraging_strategy(X,'arborealgleaning'), beak_length_culmen(X,N0), N0<=8.4, maximum_elevation(X,N13), N13<=1300.0.
+ab5(X) :- foraging_strategy(X,'arborealgleaning'), realm(X,'iw'), wing_length(X,N3), N3>101.8.
+ab6(X) :- foraging_strategy(X,'arborealgleaning'), tarsus_length(X,N2), N2>19.9, tarsus_length(X,N2), N2<=20.0, wing_length(X,N3), N3>104.5.
+ab7(X) :- foraging_strategy(X,'arborealgleaning'), beak_depth(X,N1), N1>16.0, elevational_range(X,N12), N12<=500.0.
 
 ======================================================================
 PERFORMANCE METRICS
@@ -32,23 +31,23 @@ PERFORMANCE METRICS
 
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk              116              47
- TRUE:Lower_risk              338            1122
+TRUE:Higher_risk              142              21
+ TRUE:Lower_risk              505             955
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.256
-  Recall:    0.712
-  F1-Score:  0.376
+  Precision: 0.219
+  Recall:    0.871
+  F1-Score:  0.351
   Support:   163
 
 Lower_risk:
-  Precision: 0.960
-  Recall:    0.768
-  F1-Score:  0.854
+  Precision: 0.978
+  Recall:    0.654
+  F1-Score:  0.784
   Support:   1460
 
 ----------------------------------------------------------------------
-Overall Accuracy: 76.28%
+Overall Accuracy: 67.59%
 ======================================================================

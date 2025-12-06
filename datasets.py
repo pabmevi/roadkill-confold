@@ -5,24 +5,17 @@ import numpy as np
 import pandas as pd
 from CONFOLD.foldrm import Classifier
         
-def final_extinctionrisk(data_path='datasets/Extinction/traits_finalnoNA_29Nov25.csv'):
-    attrs = [#"Agriculture","Biological_use_hunting",
-             #"Invasive_species","Climate_change","Primary_lifestyle",
-             "Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length",
-             "Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
-             "Island_restricted_breeding","Realm","Latitudinal_range","Minimum_elevation",
-             "Elevational_range","Maximum_elevation","Habitat_breadth","Diet_breadth",
-             "Adult_survival_annual","Generation_length","Foraging_strategy",
-             "Nest_placement","Territoriality","Night_lights","Human_population_density",
-             "Order","Family","Range_size","Body_mass","Clutch_size","Diet","Habitat",
-            "Migration","Extinction_risk"]
+def final_extinctionrisk(data_path='datasets/Extinction/traits_combined_noNA_5Dece25.csv'):
+    attrs = ["Order","Family","Agriculture","Hunting","Invasive_species","Climate_change","Beak_length_culmen","Beak_depth",
+             "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
+             "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
+             "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration","Extinction_risk"]
     
-    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length",
-            "Wing_length","Hand_wing_index","Tail_length","Minimum_latitude",
-            "Maximum_latitude","Minimum_elevation","Elevational_range",
-            "Maximum_elevation","Habitat_breadth","Diet_breadth","Adult_survival_annual",
-            "Generation_length","Night_lights","Human_population_density",
-            "Range_size","Body_mass","Clutch_size"]
+    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
+            "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
+            "Habitat_breadth","Diet_breadth","Adult_survival_annual","Generation_length","Range_size","Body_mass",
+            "Clutch_size"]
     label = "Extinction_risk"
     
     model = Classifier(attrs=attrs, numeric=nums, label=label)
