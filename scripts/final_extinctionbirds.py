@@ -130,9 +130,9 @@ with open('confold_results/01_baseline.txt', 'w') as f:
 expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
-rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' AND 'Agriculture' '==' '1' AND 'Invasive_species' '==' '1'" #This is the value of the 1st quartil of the data
+rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1'" #This is the value of the 1st quartil of the data
 rule2 = "with confidence 0.90 class = 'Lower_risk' if 'Range_size' '>=' '2636567'" #This is the value of the 3rd quartil of the data
-rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Elevational_range' '<=' '800' AND 'Hunting' '==' '1' AND 'Climate_change' '==' '1'"
+rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Elevational_range' '<=' '800' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
 rule4 = "with confidence 0.90 class = 'Lower_risk' if 'Elevational_range' '>=' '1900'"
 
 # Add the manual rules to the model
@@ -211,9 +211,9 @@ all_predictions['expert_with_confidence'] = expert_predicted_labels
 learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
-rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' AND 'Agriculture' '==' '1' AND 'Invasive_species' '==' '1'"
+rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1'"
 rule2_no_confidence = "class = 'Lower_risk' if 'Range_size' '>=' '2636567' "
-rule3_no_confidence = "class = 'Higher_risk' if 'Elevational_range' '<=' '800' AND 'Hunting' '==' '1' AND 'Climate_change' '==' '1'"
+rule3_no_confidence = "class = 'Higher_risk' if 'Elevational_range' '<=' '800' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
 rule4_no_confidence = "class = 'Lower_risk' if 'Elevational_range' '>=' '1900'"
 
 # Add the manual rules to the model
