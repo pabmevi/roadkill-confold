@@ -10,34 +10,30 @@ extinction_risk(X,'lower_risk') :- rule4(X), not rule1(X), not rule2(X), not rul
 extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
 extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
 extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
-extinction_risk(X,'lower_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
-extinction_risk(X,'lower_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
-extinction_risk(X,'lower_risk') :- rule10(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X).
-extinction_risk(X,'lower_risk') :- rule11(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X).
+extinction_risk(X,'higher_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
+extinction_risk(X,'higher_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
+extinction_risk(X,'higher_risk') :- rule10(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X).
+extinction_risk(X,'higher_risk') :- rule11(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X).
 extinction_risk(X,'higher_risk') :- rule12(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X).
 extinction_risk(X,'higher_risk') :- rule13(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X), not rule12(X).
-extinction_risk(X,'higher_risk') :- rule14(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X), not rule12(X), not rule13(X).
+extinction_risk(X,'lower_risk') :- rule14(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X), not rule12(X), not rule13(X).
 extinction_risk(X,'higher_risk') :- rule15(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X), not rule12(X), not rule13(X), not rule14(X).
-extinction_risk(X,'lower_risk') :- rule16(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X), not rule12(X), not rule13(X), not rule14(X), not rule15(X).
-extinction_risk(X,'higher_risk') :- rule17(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X), not rule12(X), not rule13(X), not rule14(X), not rule15(X), not rule16(X).
 rule1(X) :- range_size(X,N25), N25<=75321. [confidence: 0.9]
 rule2(X) :- range_size(X,N25), N25>2636567. [confidence: 0.9]
 rule3(X) :- elevational_range(X,N17), N17<=800. [confidence: 0.9]
 rule4(X) :- elevational_range(X,N17), N17>1900. [confidence: 0.9]
 rule5(X) :- generation_length(X,N24), N24>4.068. [confidence: 0.9]
 rule6(X) :- generation_length(X,N24), N24<=1.424. [confidence: 0.9]
-rule7(X) :- body_mass(X,N26), N26>130. [confidence: 0.8]
-rule8(X) :- body_mass(X,N26), N26<=15. [confidence: 0.8]
-rule9(X) :- body_mass(X,N26), N26<=15. [confidence: 0.8]
-rule10(X) :- body_mass(X,N26), N26<=15. [confidence: 0.8]
-rule11(X) :- body_mass(X,N26), N26<=15. [confidence: 0.8]
-rule12(X) :- agriculture(X,N2), N2>1. [confidence: 0.9]
-rule13(X) :- hunting(X,N3), N3>1. [confidence: 0.9]
-rule14(X) :- invasive_species(X,N4), N4>1. [confidence: 0.9]
-rule15(X) :- climate_change(X,N5), N5>1. [confidence: 0.9]
-rule16(X) :- minimum_latitude(X,N12), N12<=50.0, not ab1(X). [confidence: 0.99424]
-rule17(X) :- order(X,'passeriformes'). [confidence: 0.59091]
-ab1(X) :- family(X,'hirundinidae'), tail_length(X,N11), N11>73.5.
+rule7(X) :- agriculture(X,N2), N2>1. [confidence: 0.9]
+rule8(X) :- hunting(X,N3), N3>1. [confidence: 0.9]
+rule9(X) :- hunting(X,N3), N3>1. [confidence: 0.9]
+rule10(X) :- hunting(X,N3), N3>1. [confidence: 0.9]
+rule11(X) :- hunting(X,N3), N3>1. [confidence: 0.9]
+rule12(X) :- invasive_species(X,N4), N4>1. [confidence: 0.9]
+rule13(X) :- climate_change(X,N5), N5>1. [confidence: 0.9]
+rule14(X) :- minimum_latitude(X,N12), N12<=50.0, not ab1(X). [confidence: 0.99634]
+rule15(X) :- order(X,'passeriformes'). [confidence: 0.59091]
+ab1(X) :- family(X,'hirundinidae'), maximum_latitude(X,N13), N13>23.19.
 
 ======================================================================
 PERFORMANCE METRICS
@@ -45,23 +41,23 @@ PERFORMANCE METRICS
 
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk              281              64
- TRUE:Lower_risk              513             954
+TRUE:Higher_risk              286              59
+ TRUE:Lower_risk              502             965
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.354
-  Recall:    0.814
-  F1-Score:  0.493
+  Precision: 0.363
+  Recall:    0.829
+  F1-Score:  0.505
   Support:   345
 
 Lower_risk:
-  Precision: 0.937
-  Recall:    0.650
-  F1-Score:  0.768
+  Precision: 0.942
+  Recall:    0.658
+  F1-Score:  0.775
   Support:   1467
 
 ----------------------------------------------------------------------
-Overall Accuracy: 68.16%
+Overall Accuracy: 69.04%
 ======================================================================

@@ -150,9 +150,6 @@ expert_model.add_manual_rule(rule5, model_template.attrs, model_template.numeric
 expert_model.add_manual_rule(rule6, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule7, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule9, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule10, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
