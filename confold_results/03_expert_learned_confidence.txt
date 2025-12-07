@@ -8,26 +8,25 @@ extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'lower_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
 extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
-extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
 extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
 extinction_risk(X,'higher_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
-extinction_risk(X,'higher_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
+extinction_risk(X,'lower_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
 extinction_risk(X,'higher_risk') :- rule10(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X).
-extinction_risk(X,'lower_risk') :- rule11(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X).
-extinction_risk(X,'higher_risk') :- rule12(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X), not rule11(X).
+extinction_risk(X,'higher_risk') :- rule11(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X).
 rule1(X) :- range_size(X,N25), N25<=75321. [confidence: 0.45407]
 rule2(X) :- range_size(X,N25), N25>2636567. [confidence: 0.92861]
 rule3(X) :- elevational_range(X,N17), N17<=800. [confidence: 0.20056]
 rule4(X) :- elevational_range(X,N17), N17>1900. [confidence: 0.93634]
-rule5(X) :- generation_length(X,N24), N24>4.068. [confidence: 0.2387]
-rule6(X) :- generation_length(X,N24), N24<=1.424. [confidence: 0.5]
-rule7(X) :- agriculture(X,N2), N2>1. [confidence: 0.5984]
-rule8(X) :- hunting(X,N3), N3>1. [confidence: 0.39706]
-rule9(X) :- invasive_species(X,N4), N4>1. [confidence: 0.40909]
-rule10(X) :- climate_change(X,N5), N5>1. [confidence: 0.12931]
-rule11(X) :- minimum_latitude(X,N12), N12<=50.0, not ab1(X). [confidence: 0.99634]
-rule12(X) :- order(X,'passeriformes'). [confidence: 0.59091]
-ab1(X) :- family(X,'hirundinidae'), maximum_latitude(X,N13), N13>23.19.
+rule5(X) :- agriculture(X,N2), N2>1. [confidence: 0.64035]
+rule6(X) :- hunting(X,N3), N3>1. [confidence: 0.37069]
+rule7(X) :- invasive_species(X,N4), N4>1. [confidence: 0.39286]
+rule8(X) :- climate_change(X,N5), N5>1. [confidence: 0.09375]
+rule9(X) :- minimum_latitude(X,N12), N12<=50.0, not ab1(X), not ab2(X). [confidence: 0.99685]
+rule10(X) :- not order(X,'bucerotiformes'). [confidence: 0.59091]
+rule11(X) :- order(X,'bucerotiformes'). [confidence: 0.55]
+ab1(X) :- order(X,'bucerotiformes'), beak_length_culmen(X,N6), N6>180.2.
+ab2(X) :- family(X,'hirundinidae'), maximum_latitude(X,N13), N13>23.19.
 
 ======================================================================
 PERFORMANCE METRICS
@@ -36,22 +35,22 @@ PERFORMANCE METRICS
 Confusion Matrix:
                  PRED:Higher_risk PRED:Lower_risk
 TRUE:Higher_risk              286              59
- TRUE:Lower_risk              502             965
+ TRUE:Lower_risk              453            1014
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.363
+  Precision: 0.387
   Recall:    0.829
-  F1-Score:  0.505
+  F1-Score:  0.528
   Support:   345
 
 Lower_risk:
-  Precision: 0.942
-  Recall:    0.658
-  F1-Score:  0.775
+  Precision: 0.945
+  Recall:    0.691
+  F1-Score:  0.798
   Support:   1467
 
 ----------------------------------------------------------------------
-Overall Accuracy: 69.04%
+Overall Accuracy: 71.74%
 ======================================================================
