@@ -7,24 +7,16 @@ extinction_risk(X,'higher_risk') :- rule1(X).
 extinction_risk(X,'lower_risk') :- rule2(X), not rule1(X).
 extinction_risk(X,'higher_risk') :- rule3(X), not rule1(X), not rule2(X).
 extinction_risk(X,'higher_risk') :- rule4(X), not rule1(X), not rule2(X), not rule3(X).
-extinction_risk(X,'higher_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
-extinction_risk(X,'lower_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
+extinction_risk(X,'lower_risk') :- rule5(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X).
+extinction_risk(X,'higher_risk') :- rule6(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X).
 extinction_risk(X,'higher_risk') :- rule7(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X).
-extinction_risk(X,'higher_risk') :- rule8(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X).
-extinction_risk(X,'lower_risk') :- rule9(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X).
-extinction_risk(X,'lower_risk') :- rule10(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X).
-extinction_risk(X,'higher_risk') :- rule11(X), not rule1(X), not rule2(X), not rule3(X), not rule4(X), not rule5(X), not rule6(X), not rule7(X), not rule8(X), not rule9(X), not rule10(X).
 rule1(X) :- range_size(X,N25), N25<=75321. [confidence: 0.9]
 rule2(X) :- range_size(X,N25), N25>2636567. [confidence: 0.9]
 rule3(X) :- elevational_range(X,N17), N17<=800. [confidence: 0.9]
 rule4(X) :- generation_length(X,N24), N24>4.068. [confidence: 0.9]
-rule5(X) :- body_mass(X,N26), N26>130. [confidence: 0.8]
-rule6(X) :- agriculture(X,'0'), not ab4(X), not ab6(X), not ab7(X), not ab8(X). [confidence: 0.99762]
-rule7(X) :- realm(X,'i'), not ab10(X). [confidence: 0.90217]
-rule8(X) :- not habitat(X,'forest'), not ab11(X), not ab16(X), not ab18(X). [confidence: 0.92742]
-rule9(X) :- not habitat(X,'forest'). [confidence: 0.85938]
-rule10(X) :- climate_change(X,'0'), not ab21(X). [confidence: 0.78472]
-rule11(X) :- elevational_range(X,N17), N17<=1950.0, not ab22(X). [confidence: 0.87143]
+rule5(X) :- agriculture(X,'0'), not ab4(X), not ab6(X), not ab7(X), not ab8(X). [confidence: 0.99762]
+rule6(X) :- realm(X,'i'), not ab10(X). [confidence: 0.90217]
+rule7(X) :- not habitat(X,'forest'), not ab11(X), not ab16(X), not ab18(X). [confidence: 0.92742]
 ab1(X) :- hand_wing_index(X,N10), N10<=13.4.
 ab2(X) :- realm(X,'i'), not ab1(X).
 ab3(X) :- minimum_latitude(X,N12), N12<=4.35, not ab2(X).
@@ -43,34 +35,37 @@ ab15(X) :- tarsus_length(X,N8), N8>27.1.
 ab16(X) :- hand_wing_index(X,N10), N10<=21.5, maximum_latitude(X,N13), N13>-24.75, not ab14(X), not ab15(X).
 ab17(X) :- family(X,'passerellidae').
 ab18(X) :- hunting(X,'0'), minimum_latitude(X,N12), N12>45.71, not ab17(X).
-ab19(X) :- elevational_range(X,N17), N17>1600.0.
-ab20(X) :- beak_depth(X,N7), N7>3.2, elevational_range(X,N17), N17<=1000.0, not ab12(X).
-ab21(X) :- minimum_latitude(X,N12), N12>-2.07, not ab19(X), not ab20(X).
-ab22(X) :- range_size(X,N25), N25<=82448.18.
 
 ======================================================================
 PERFORMANCE METRICS
 ======================================================================
 
 Confusion Matrix:
-                 PRED:Higher_risk PRED:Lower_risk
-TRUE:Higher_risk              294              51
- TRUE:Lower_risk              554             913
+                 PRED:Higher_risk PRED:Lower_risk PRED:None
+TRUE:Higher_risk              285              47        13
+ TRUE:Lower_risk              523             929        15
+       TRUE:None                0               0         0
 
 Per-class Metrics:
 ----------------------------------------------------------------------
 Higher_risk:
-  Precision: 0.347
-  Recall:    0.852
-  F1-Score:  0.493
+  Precision: 0.353
+  Recall:    0.826
+  F1-Score:  0.494
   Support:   345
 
 Lower_risk:
-  Precision: 0.947
-  Recall:    0.622
-  F1-Score:  0.751
+  Precision: 0.952
+  Recall:    0.633
+  F1-Score:  0.761
   Support:   1467
 
+None:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   0
+
 ----------------------------------------------------------------------
-Overall Accuracy: 66.61%
+Overall Accuracy: 67.00%
 ======================================================================
