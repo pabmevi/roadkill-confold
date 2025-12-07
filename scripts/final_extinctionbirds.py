@@ -133,9 +133,11 @@ expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_templ
 rule1 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321'" #This is the value of the 1st quartil of the data
 rule2 = "with confidence 0.90 class = 'Lower_risk' if 'Range_size' '>=' '2636567'" #This is the value of the 3rd quartil of the data
 rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Elevational_range' '<=' '800'"
-rule4 = "with confidence 0.90 class = 'Lower_risk' if 'Elevational_range' '<=' '1900'"
+rule4 = "with confidence 0.90 class = 'Lower_risk' if 'Elevational_range' '>=' '1900'"
 rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Generation_length' '>=' '4.068'"
-rule6 = "with confidence 0.80 class = 'Higher_risk' if 'Body_mass' '>=' '130'"
+rule6 = "with confidence 0.90 class = 'Lower_risk' if 'Generation_length' '<=' '1.424'"
+rule7 = "with confidence 0.80 class = 'Higher_risk' if 'Body_mass' '>=' '130'"
+rule8 = "with confidence 0.80 class = 'Lower_risk' if 'Body_mass' '<=' '15'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -144,6 +146,8 @@ expert_model.add_manual_rule(rule3, model_template.attrs, model_template.numeric
 expert_model.add_manual_rule(rule4, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule5, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule6, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_model.add_manual_rule(rule7, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_model.add_manual_rule(rule8, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added to the Model (Before Training) ---")
 for rule in expert_model.rules:
@@ -220,7 +224,9 @@ rule2_no_confidence = "class = 'Lower_risk' if 'Range_size' '>=' '2636567'"
 rule3_no_confidence = "class = 'Higher_risk' if 'Elevational_range' '<=' '800'"
 rule4_no_confidence = "class = 'Lower_risk' if 'Elevational_range' '>=' '1900'"
 rule5_no_confidence = "class = 'Higher_risk' if 'Generation_length' '>=' '4.068'"
-rule6_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '130'"
+rule6_no_confidence = "class = 'Lower_risk' if 'Generation_length' '<=' '1.424'"
+rule7_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '130'"
+rule8_no_confidence = "class = 'Lower_risk' if 'Body_mass' '<=' '15'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -229,6 +235,8 @@ learned_confidence_model.add_manual_rule(rule3_no_confidence, model_template.att
 learned_confidence_model.add_manual_rule(rule4_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule5_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule6_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+learned_confidence_model.add_manual_rule(rule7_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+learned_confidence_model.add_manual_rule(rule8_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added (Before Training) ---")
 print("Notice the default confidence value of 0.5 assigned to each rule.")
