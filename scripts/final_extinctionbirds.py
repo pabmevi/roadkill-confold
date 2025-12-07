@@ -138,10 +138,10 @@ rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Generation_length' '>=' 
 rule6 = "with confidence 0.90 class = 'Lower_risk' if 'Generation_length' '<=' '1.424'"
 rule7 = "with confidence 0.80 class = 'Higher_risk' if 'Body_mass' '>=' '130'"
 rule8 = "with confidence 0.80 class = 'Lower_risk' if 'Body_mass' '<=' '15'"
-rule9 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '=' '1'"
-rule10 = "with confidence 0.90 class = 'Higher_risk' if 'Hunting' '=' '1'"
-rule11 = "with confidence 0.90 class = 'Higher_risk' if 'Invasive_species' '=' '1'"
-rule12 = "with confidence 0.90 class = 'Higher_risk' if 'Climate_change' '=' '1'"
+rule9 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '==' '1'"
+rule10 = "with confidence 0.90 class = 'Higher_risk' if 'Hunting' '==' '1'"
+rule11 = "with confidence 0.90 class = 'Higher_risk' if 'Invasive_species' '==' '1'"
+rule12 = "with confidence 0.90 class = 'Higher_risk' if 'Climate_change' '==' '1'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -238,10 +238,10 @@ rule5_no_confidence = "class = 'Higher_risk' if 'Generation_length' '>=' '4.068'
 rule6_no_confidence = "class = 'Lower_risk' if 'Generation_length' '<=' '1.424'"
 rule7_no_confidence = "class = 'Higher_risk' if 'Body_mass' '>=' '130'"
 rule8_no_confidence = "class = 'Lower_risk' if 'Body_mass' '<=' '15'"
-rule9_no_confidence = "class = 'Higher_risk' if 'Agriculture' '=' '1'"
-rule10_no_confidence = "class = 'Higher_risk' if 'Hunting' '=' '1'"
-rule11_no_confidence = "class = 'Higher_risk' if 'Invasive_species' '=' '1'"
-rule12_no_confidence = "class = 'Higher_risk' if 'Climate_change' '=' '1'"
+rule9_no_confidence = "class = 'Higher_risk' if 'Agriculture' '==' '1'"
+rule10_no_confidence = "class = 'Higher_risk' if 'Hunting' '==' '1'"
+rule11_no_confidence = "class = 'Higher_risk' if 'Invasive_species' '==' '1'"
+rule12_no_confidence = "class = 'Higher_risk' if 'Climate_change' '==' '1'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
