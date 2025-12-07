@@ -300,7 +300,7 @@ from algo import prune_rules
 
 # Apply the pruning function
 # This will create a new list containing only the rules that meet the confidence threshold.
-pruned_rules = prune_rules(expert_model.rules, confidence=0.85)
+pruned_rules = prune_rules(expert_model.rules, confidence=0.90)
 
 # We can create a new model instance to hold these pruned rules
 simple_pruned_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
