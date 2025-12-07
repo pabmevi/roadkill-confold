@@ -130,11 +130,11 @@ with open('confold_results/01_baseline.txt', 'w') as f:
 expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
-rule1 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
-rule2 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
-rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
-rule4 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Hunting' '==' '1'"
-rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1'"
+rule1 = "with confidence 0.99 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule2 = "with confidence 0.95 class = 'Higher_risk' if 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule3 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule4 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Hunting' '==' '1'"
+rule5 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
