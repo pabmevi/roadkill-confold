@@ -130,13 +130,11 @@ with open('confold_results/01_baseline.txt', 'w') as f:
 expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
-rule1 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule2 = "with confidence 0.90 class = 'Higher_risk' if 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule4 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule6 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Climate_change' '==' '1'"
-rule7 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule1 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule2 = "with confidence 0.90 class = 'Higher_risk' if 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule3 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule4 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Hunting' '==' '1'"
+rule5 = "with confidence 0.90 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1'"
 
 # Add the manual rules to the model
 expert_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -144,8 +142,6 @@ expert_model.add_manual_rule(rule2, model_template.attrs, model_template.numeric
 expert_model.add_manual_rule(rule3, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule4, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 expert_model.add_manual_rule(rule5, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule6, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-expert_model.add_manual_rule(rule7, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added to the Model (Before Training) ---")
 for rule in expert_model.rules:
@@ -217,13 +213,11 @@ all_predictions['expert_with_confidence'] = expert_predicted_labels
 learned_confidence_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings, but WITHOUT the 'with confidence' part.
-rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule2_no_confidence = "class = 'Higher_risk' if 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule3_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule4_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule5_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Hunting' '==' '1' and 'Climate_change' '==' '1'"
-rule6_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Climate_change' '==' '1'"
-rule7_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Elevational_range' '<=' '800' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule1_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule2_no_confidence = "class = 'Higher_risk' if 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule3_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule4_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Hunting' '==' '1'"
+rule5_no_confidence = "class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1'"
 
 # Add the manual rules to the model
 learned_confidence_model.add_manual_rule(rule1_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
@@ -231,8 +225,6 @@ learned_confidence_model.add_manual_rule(rule2_no_confidence, model_template.att
 learned_confidence_model.add_manual_rule(rule3_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule4_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 learned_confidence_model.add_manual_rule(rule5_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-learned_confidence_model.add_manual_rule(rule6_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
-learned_confidence_model.add_manual_rule(rule7_no_confidence, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
 
 print("--- Manual Rules Added (Before Training) ---")
 print("Notice the default confidence value of 0.5 assigned to each rule.")
