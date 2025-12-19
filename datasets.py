@@ -23,6 +23,24 @@ def final_extinctionrisk(data_path='datasets/Extinction/traits_combined_noNA_5De
     data = model.load_data(data_path)
     return model, data
 
+def final_extinctionrisk_noth(data_path='datasets/Extinction/traits_combined_noNA_5Dece25.csv'):
+    attrs = ["Order","Family",
+             "Beak_length_culmen","Beak_depth",
+             "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
+             "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
+             "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration","Extinction_risk"]
+    
+    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
+            "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
+            "Habitat_breadth","Diet_breadth","Adult_survival_annual","Generation_length","Range_size","Body_mass",
+            "Clutch_size"]
+    label = "Extinction_risk"
+    
+    model = Classifier(attrs=attrs, numeric=nums, label=label)
+    data = model.load_data(data_path)
+    return model, data
+
 def extinction_birds(data_path='datasets/Extinction/AvoIUCNbehavMig.csv'):
     attrs = ['IslandEndemic','Mass','HWI','Habitat.x','Beak.Length.culmen','Beak.Length.nares',
             'Beak.Width','Beak.Depth','Tarsus.Length','Wing.Length','Kipps.Distance','Secondary1',
