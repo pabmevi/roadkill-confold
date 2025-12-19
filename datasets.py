@@ -6,7 +6,8 @@ import pandas as pd
 from CONFOLD.foldrm import Classifier
         
 def final_extinctionrisk(data_path='datasets/Extinction/traits_combined_noNA_5Dece25.csv'):
-    attrs = ["Order","Family","Agriculture","Hunting","Invasive_species","Climate_change","Beak_length_culmen","Beak_depth",
+    attrs = ["Order","Family",#"Agriculture","Hunting","Invasive_species","Climate_change",
+             "Beak_length_culmen","Beak_depth",
              "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
              "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
              "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",

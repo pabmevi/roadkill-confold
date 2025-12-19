@@ -130,7 +130,9 @@ with open('confold_results/01_baseline.txt', 'w') as f:
 expert_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
 # Define our expert rules as strings
-rule1 = "with confidence 0.99 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+#rule1 = "with confidence 0.99 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+rule1 = "with confidence 0.99 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Body_mass' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
+
 rule2 = "with confidence 0.95 class = 'Higher_risk' if 'Agriculture' '==' '1' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
 rule3 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Invasive_species' '==' '1' and 'Hunting' '==' '1'"
 rule4 = "with confidence 0.95 class = 'Higher_risk' if 'Range_size' '<=' '75321' and 'Agriculture' '==' '1' and 'Hunting' '==' '1'"
@@ -357,8 +359,8 @@ with open('confold_results/04_simple_pruned_model_expert_confidence.txt', 'w') a
 # Instantiate a new model for this experiment
 advanced_pruning_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
 
-# Now, train using confidence_fit with a high 15% improvement threshold
-print("--- Training with confidence_fit(improvement_threshold=0.15) ---")
+# Now, train using confidence_fit with a high 10% improvement threshold
+print("--- Training with confidence_fit(improvement_threshold=0.10) ---")
 advanced_pruning_model.confidence_fit(train_data, improvement_threshold=0.1)
 
 print("\n--- Rules Learned via Confidence-Driven Learning ---")
@@ -408,6 +410,78 @@ with open('confold_results/05_advanced_pruning_model.txt', 'w') as f:
     
     f.write("-"*70 + f"\nOverall Accuracy: {advanced_accuracy * 100:.2f}%\n" + "="*70 + "\n")
 
+##################
+#### Method 3: Expert Model with Advanced Pruning
+# This applies advanced pruning (confidence-driven learning) to expert rules that already have confidence values
+expert_advanced_model = Classifier(attrs=model_template.attrs.copy(), numeric=model_template.numeric, label=model_template.label)
+
+# Add the expert rules WITH confidence (same as expert_model)
+expert_advanced_model.add_manual_rule(rule1, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_advanced_model.add_manual_rule(rule2, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_advanced_model.add_manual_rule(rule3, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_advanced_model.add_manual_rule(rule4, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+expert_advanced_model.add_manual_rule(rule5, model_template.attrs, model_template.numeric, ['Lower_risk', 'Higher_risk'], instructions=False)
+
+print("\n--- Expert Model with Advanced Pruning ---")
+print("Starting with expert rules (confidence 0.99 and 0.95)")
+print("Applying confidence_fit with high improvement threshold to add only high-confidence additional rules")
+
+# Use confidence_fit to learn additional rules with high threshold
+# The expert rules with their predefined confidence remain, but only high-confidence new rules are added
+expert_advanced_model.confidence_fit(train_data, improvement_threshold=0.1)
+
+print("\n--- Expert Rules After Confidence-Driven Learning ---")
+print("Expert rules maintain their confidence, and only high-confidence additional rules were added.")
+expert_advanced_model.print_asp(simple=True)
+
+# === Predictions for Expert Advanced Model ===
+predictions_expert_advanced = expert_advanced_model.predict(X_test)
+predicted_labels_expert_advanced = [p[0] for p in predictions_expert_advanced]
+# Store predictions
+all_predictions['expert_advanced_pruning'] = predicted_labels_expert_advanced
+# Calculate accuracy
+expert_advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_expert_advanced[i] == Y_test[i]) / len(Y_test)
+
+# GUARDAR EXPERT ADVANCED MODEL
+with open('confold_results/06_expert_advanced_pruning_model.txt', 'w') as f:
+    expert_advanced_model.asp()
+    f.write("EXPERT MODEL WITH ADVANCED PRUNING\n" + "="*70 + "\n\n")
+    f.write("Starting with expert rules (confidence 0.99 and 0.95)\n")
+    f.write("Applied confidence_fit(improvement_threshold=0.1) for additional rules\n\n")
+    f.write("RULES:\n" + "-"*70 + "\n")
+    f.write("\n".join(expert_advanced_model.asp_rules) + "\n\n")
+    
+    # Calcular métricas
+    def _n(x): return 'None' if x is None else str(x).strip()
+    y_true_n = [_n(y) for y in Y_test]
+    y_pred_n = [_n(y) for y in predicted_labels_expert_advanced]
+    labels_c, mat_c, metrics_c = confusion_matrix_and_metrics(y_true_n, y_pred_n)
+    
+    f.write("="*70 + "\nPERFORMANCE METRICS\n" + "="*70 + "\n")
+    # Confusion matrix
+    header = [""] + [f"PRED:{l}" for l in labels_c]
+    rows = [[f"TRUE:{labels_c[i]}"] + mat_c[i] for i in range(len(labels_c))]
+    col_widths = [max(len(str(x)) for x in col) for col in zip(*([header] + rows))]
+    f.write("\nConfusion Matrix:\n")
+    f.write(" ".join(str(x).rjust(w) for x, w in zip(header, col_widths)) + "\n")
+    for row in rows:
+        f.write(" ".join(str(x).rjust(w) for x, w in zip(row, col_widths)) + "\n")
+    
+    # Per-class metrics
+    f.write("\nPer-class Metrics:\n" + "-"*70 + "\n")
+    for lbl in labels_c:
+        m = metrics_c[lbl]
+        f.write(f"{lbl}:\n")
+        f.write(f"  Precision: {m['precision']:.3f}\n")
+        f.write(f"  Recall:    {m['recall']:.3f}\n")
+        f.write(f"  F1-Score:  {m['f1']:.3f}\n")
+        f.write(f"  Support:   {m['support']}\n\n")
+    
+    f.write("-"*70 + f"\nOverall Accuracy: {expert_advanced_accuracy * 100:.2f}%\n" + "="*70 + "\n")
+
+print(f"\n--- Expert Advanced Pruning Model Evaluation ---")
+print(f"Accuracy: {expert_advanced_accuracy * 100:.2f}%")
+
 # ------------------ Consolidated Confusion Matrices (end of script) ------------------
 def _norm_label(x):
     # Normalize labels to comparable strings
@@ -422,7 +496,8 @@ for key, y_pred in [('Baseline', all_predictions.get('baseline')),
                      ('Expert (rule confidence provided)', all_predictions.get('expert_with_confidence')),
                      ('Expert (without providing rule confidence)', all_predictions.get('expert_no_confidence')),
                      ('Simple pruning', all_predictions.get('simple_pruning')),
-                     ('Advanced pruning', all_predictions.get('advanced_pruning'))]:
+                     ('Advanced pruning', all_predictions.get('advanced_pruning')),
+                     ('Expert with Advanced pruning', all_predictions.get('expert_advanced_pruning'))]:
     if y_pred is None:
         continue
     y_pred_norm = [_norm_label(y) for y in y_pred]
