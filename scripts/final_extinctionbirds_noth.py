@@ -441,7 +441,7 @@ all_predictions['expert_advanced_pruning'] = predicted_labels_expert_advanced
 expert_advanced_accuracy = sum(1 for i in range(len(Y_test)) if predicted_labels_expert_advanced[i] == Y_test[i]) / len(Y_test)
 
 # GUARDAR EXPERT ADVANCED MODEL
-with open('confold_results/06_expert_advanced_pruning_model.txt', 'w') as f:
+with open('confold_results_noth/06_expert_advanced_pruning_model.txt', 'w') as f:
     expert_advanced_model.asp()
     f.write("EXPERT MODEL WITH ADVANCED PRUNING\n" + "="*70 + "\n\n")
     f.write("Starting with expert rules (confidence 0.99 and 0.95)\n")
