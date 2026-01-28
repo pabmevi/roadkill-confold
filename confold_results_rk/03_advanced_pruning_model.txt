@@ -3,8 +3,8 @@ ADVANCED PRUNING
 
 RULES:
 ----------------------------------------------------------------------
-road.classe(X,'low') :- rule1(X).
-road.classe(X,'high') :- rule2(X), not rule1(X).
+habitat_breadth_n(X,'low') :- rule1(X).
+habitat_breadth_n(X,'high') :- rule2(X), not rule1(X).
 rule1(X) :- nokm(X,N6), N6>1160.0. [confidence: 0.83702]
 rule2(X) :- nokm(X,N6), N6<=7.5, gestation_length_d(X,N12), N12<=63.914. [confidence: 0.85897]
 
@@ -13,12 +13,12 @@ PERFORMANCE METRICS
 ======================================================================
 
 Confusion Matrix:
-                 PRED:High PRED:Low PRED:Medium PRED:Medium-High PRED:Medium-Low PRED:None
+                 PRED:High PRED:Low PRED:Medium PRED:Medium_High PRED:Medium_Low PRED:None
        TRUE:High         6        0           0                0               0        67
         TRUE:Low         0       36           0                0               0        38
      TRUE:Medium         0        1           0                0               0        72
-TRUE:Medium-High         1        2           0                0               0        70
- TRUE:Medium-Low         0        2           0                0               0        70
+TRUE:Medium_High         1        2           0                0               0        70
+ TRUE:Medium_Low         0        2           0                0               0        70
        TRUE:None         0        0           0                0               0         0
 
 Per-class Metrics:
@@ -41,13 +41,13 @@ Medium:
   F1-Score:  0.000
   Support:   73
 
-Medium-High:
+Medium_High:
   Precision: 0.000
   Recall:    0.000
   F1-Score:  0.000
   Support:   73
 
-Medium-Low:
+Medium_Low:
   Precision: 0.000
   Recall:    0.000
   F1-Score:  0.000
