@@ -47,7 +47,7 @@ def rk_mammals(data_path='datasets/Extinction/RkTraits_CONFOLD.csv'):
              "litter_size_n","litters_per_year_n","neonate_mass_g","weaning_age_d","generation_length_d","dispersal_km",
              "density_n_km2","home_range_km2","dphy_invertebrate","det_vend","det_vect","det_vunk","det_scav","det_fruit",
              "det_seed","det_plantother","det_diet_breadth_n","upper_elevation_m","lower_elevation_m","habitat_breadth_n",
-             "road.classe","PhyloPC1","PhyloPC2","PhyloPC3"]
+             "road.classe"]
     
     nums = ["decimalLatitude","decimalLongitude", "noKM","adult_mass_g",
              "adult_brain_mass_g","adult_body_length_mm","max_longevity_d","age_first_reproduction_d","gestation_length_d",

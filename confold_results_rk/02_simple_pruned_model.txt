@@ -1,0 +1,61 @@
+SIMPLE PRUNING (Confidence >= 0.90)
+======================================================================
+
+RULES:
+----------------------------------------------------------------------
+
+
+======================================================================
+PERFORMANCE METRICS
+======================================================================
+
+Confusion Matrix:
+                 PRED:High PRED:Low PRED:Medium PRED:Medium-High PRED:Medium-Low PRED:None
+       TRUE:High         0        0           0                0               0        73
+        TRUE:Low         0        0           0                0               0        74
+     TRUE:Medium         0        0           0                0               0        73
+TRUE:Medium-High         0        0           0                0               0        73
+ TRUE:Medium-Low         0        0           0                0               0        72
+       TRUE:None         0        0           0                0               0         0
+
+Per-class Metrics:
+----------------------------------------------------------------------
+High:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   73
+
+Low:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   74
+
+Medium:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   73
+
+Medium-High:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   73
+
+Medium-Low:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   72
+
+None:
+  Precision: 0.000
+  Recall:    0.000
+  F1-Score:  0.000
+  Support:   0
+
+----------------------------------------------------------------------
+Overall Accuracy: 0.00%
+======================================================================
