@@ -3,8 +3,8 @@ BASELINE MODEL
 
 RULES:
 ----------------------------------------------------------------------
-habitat_breadth_n(X,'low') :- rule1(X).
-habitat_breadth_n(X,'high') :- rule2(X), not rule1(X).
+roadkill_category(X,'low') :- rule1(X).
+roadkill_category(X,'high') :- rule2(X), not rule1(X).
 rule1(X) :- nokm(X,N6), N6>1160.0. [confidence: 0.83702]
 rule2(X) :- nokm(X,N6), N6<=7.5, gestation_length_d(X,N12), N12<=63.914, not ab1(X). [confidence: 0.88158]
 ab1(X) :- litter_size_n(X,N13), N13>6.755.
