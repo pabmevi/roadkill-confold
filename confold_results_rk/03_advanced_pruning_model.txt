@@ -3,8 +3,8 @@ ADVANCED PRUNING
 
 RULES:
 ----------------------------------------------------------------------
-phylopc3(X,'low') :- rule1(X).
-phylopc3(X,'high') :- rule2(X), not rule1(X).
+road.classe(X,'low') :- rule1(X).
+road.classe(X,'high') :- rule2(X), not rule1(X).
 rule1(X) :- nokm(X,N6), N6>1160.0. [confidence: 0.83702]
 rule2(X) :- nokm(X,N6), N6<=7.5, gestation_length_d(X,N12), N12<=63.914. [confidence: 0.85897]
 
