@@ -14,12 +14,12 @@ PERFORMANCE METRICS
 ======================================================================
 
 Confusion Matrix:
-                 PRED:High PRED:Low PRED:Medium PRED:Medium_High PRED:Medium_Low PRED:None
+                 PRED:High PRED:Low PRED:Medium PRED:Medium-High PRED:Medium-Low PRED:None
        TRUE:High         5        0           0                0               0        68
         TRUE:Low         0       36           0                0               0        38
      TRUE:Medium         0        1           0                0               0        72
-TRUE:Medium_High         1        2           0                0               0        70
- TRUE:Medium_Low         0        2           0                0               0        70
+TRUE:Medium-High         1        2           0                0               0        70
+ TRUE:Medium-Low         0        2           0                0               0        70
        TRUE:None         0        0           0                0               0         0
 
 Per-class Metrics:
@@ -42,13 +42,13 @@ Medium:
   F1-Score:  0.000
   Support:   73
 
-Medium_High:
+Medium-High:
   Precision: 0.000
   Recall:    0.000
   F1-Score:  0.000
   Support:   73
 
-Medium_Low:
+Medium-Low:
   Precision: 0.000
   Recall:    0.000
   F1-Score:  0.000

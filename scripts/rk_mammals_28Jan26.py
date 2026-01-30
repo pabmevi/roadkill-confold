@@ -135,7 +135,7 @@ print("SIMPLE PRUNING")
 print("="*70)
 
 # Apply pruning to baseline rules
-pruned_rules = prune_rules(baseline_model.rules, confidence=0.90)
+pruned_rules = prune_rules(baseline_model.rules, confidence=0.70)
 
 # Create new model with pruned rules
 simple_pruned_model = Classifier(attrs=model_template.attrs, numeric=model_template.numeric, label=model_template.label)
