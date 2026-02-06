@@ -46,33 +46,61 @@ def extinction_birds15(data_path='datasets/Extinction/BirdTraits_15imputations_m
     data = model.load_data(data_path)
     return model, data
 
-def extinction_birds2(data_path='datasets/Extinction/BirdTraits_2imputations_mean.csv'):
-    #attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
-    #         "Foraging","MatingSystem","NestPlacement",
-    #         "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
-    #         "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
-    #         "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-    #         "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","RR","ISL","LAT",
-    #         "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
-    #         "Range_size","Body_mass","Clutch_size"]
-    attrs = ["Primary.Lifestyle","RLM","Nest_Type","Nest_SBS","Flightlessness","Family",
-             "Foraging","MatingSystem","NestPlacement",
-             "Territoriality","IslandDwelling","Order1","Diet","Habitat_cat","Migration",
-             "Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
-             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length","Habitat.Density","Min.Latitude","Max.Latitude","LAT",
-             "Elevational.Range","HB","DB","LogNightLights","LogHumanPopulationDensity",
-             "Range_size","Body_mass","Clutch_size"]
+def extinction_birds2(data_path='datasets/Extinction/traits_combined_noNA_5Dece25.csv'):
+    attrs = ["Order","Family","Agriculture","Hunting","Invasive_species","Climate_change",
+             "Beak_length_culmen","Beak_depth",
+             "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
+             "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
+             "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration"]
     
-    nums = ["Beak.Length_Culmen","Beak.Length_Nares","Beak.Width","Beak.Depth",
-             "Tarsus.Length","Wing.Length","Kipps.Distance","Secondary1","Hand.Wing.Index",
-             "Tail.Length", "Min.Latitude","Max.Latitude", "Elevational.Range", "HB", "DB",
-             "LogNightLights","LogHumanPopulationDensity", "Range_size", "Body_mass", "Clutch_size"]
-    label = "extinction_risk"
+    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
+            "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
+            "Habitat_breadth","Diet_breadth","Adult_survival_annual","Generation_length","Range_size","Body_mass",
+            "Clutch_size"]
+    label = "Extinction_risk"
     
     model = MyClassifier(attrs=attrs, numeric=nums, label=label)
     data = model.load_data(data_path)
     return model, data
+
+def extinction_birds2noth(data_path='datasets/Extinction/traits_combined_noNA_5Dece25.csv'):
+    attrs = ["Order","Family",
+             "Beak_length_culmen","Beak_depth",
+             "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
+             "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
+             "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration"]
+    
+    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
+            "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
+            "Habitat_breadth","Diet_breadth","Adult_survival_annual","Generation_length","Range_size","Body_mass",
+            "Clutch_size"]
+    label = "Extinction_risk"
+    
+    model = MyClassifier(attrs=attrs, numeric=nums, label=label)
+    data = model.load_data(data_path)
+    return model, data
+
+
+def final_extinctionrisk(data_path='datasets/Extinction/traits_combined_noNA_5Dece25.csv'):
+    attrs = ["Order","Family","Agriculture","Hunting","Invasive_species","Climate_change",
+             "Beak_length_culmen","Beak_depth",
+             "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
+             "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
+             "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration"]
+    
+    nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
+            "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
+            "Habitat_breadth","Diet_breadth","Adult_survival_annual","Generation_length","Range_size","Body_mass",
+            "Clutch_size"]
+    label = "Extinction_risk"
+    
+    model = Classifier(attrs=attrs, numeric=nums, label=label)
+    data = model.load_data(data_path)
+    return model, data
+
 
 def extinction_birds(data_path='datasets/Extinction/AvoIUCNbehavMig.csv'):
     attrs = ['IslandEndemic','Mass','HWI','Habitat.x','Beak.Length.culmen','Beak.Length.nares',
