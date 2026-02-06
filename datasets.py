@@ -48,7 +48,7 @@ def final_extinctionrisk_dataframe(data_path='datasets/Extinction/traits_combine
              "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
              "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
              "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
-             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration","Extinction_risk"]
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration"]
     
     nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
             "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
@@ -66,7 +66,7 @@ def final_extinctionrisk_noth_dataframe(data_path='datasets/Extinction/traits_co
              "Tarsus_length","Wing_length","Hand_wing_index","Tail_length","Minimum_latitude","Maximum_latitude",
              "Primary_lifestyle","Island_restricted_breeding","Latitudinal_range","Elevational_range","Habitat_breadth",
              "Diet_breadth","Realm","Minimum_elevation","Maximum_elevation","Adult_survival_annual","Generation_length",
-             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration","Extinction_risk"]
+             "Range_size","Body_mass","Clutch_size","Diet","Habitat","Migration"]
     
     nums = ["Beak_length_culmen","Beak_depth","Tarsus_length","Wing_length","Hand_wing_index","Tail_length",
             "Minimum_latitude","Maximum_latitude","Minimum_elevation","Elevational_range","Maximum_elevation",
