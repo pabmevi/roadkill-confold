@@ -80,19 +80,18 @@ def final_extinctionrisk_noth_dataframe(data_path='datasets/Extinction/traits_co
 
 
 def rk_mammals(data_path='datasets/Extinction/RkTraits_CONFOLD.csv'):
-    attrs = ["decimalLatitude","decimalLongitude","Order","noKM","adult_mass_g",
-             "adult_body_length_mm","max_longevity_d","age_first_reproduction_d","gestation_length_d",
-             "litter_size_n","litters_per_year_n","weaning_age_d","dispersal_km",
-             "density_n_km2","home_range_km2","dphy_invertebrate","det_vend","det_vect","det_scav","det_fruit",
-             "det_seed","det_plantother","det_diet_breadth_n","upper_elevation_m","lower_elevation_m","habitat_breadth_n",
-             "road.classe", "relative_brain_size","roadkill_category"]
+    attrs = ["decimalLatitude","decimalLongitude","Order","adult_mass_g","max_longevity_d",
+             "age_first_reproduction_d","litter_size_n","litters_per_year_n","dispersal_km",
+             "density_n_km2","home_range_km2","dphy_invertebrate","dphy_plant","det_vend",
+             "det_vect","det_scav","det_diet_breadth_n","altitude_breadth_m","EQ",
+             "habitat_Forest","habitat_Savanna","habitat_Shrubland","habitat_Grassland",
+             "habitat_Wetlands","habitat_Desert","habitat_Artificial_Terrestrial",
+             "n_habitats","human_footprint","roadkill_category"]
 
-    nums = ["decimalLatitude","decimalLongitude", "noKM","adult_mass_g",
-             "adult_body_length_mm","max_longevity_d","age_first_reproduction_d","gestation_length_d",
-             "litter_size_n","litters_per_year_n","weaning_age_d","dispersal_km",
-             "density_n_km2","home_range_km2","dphy_invertebrate","det_vend","det_vect","det_scav","det_fruit",
-             "det_seed","det_plantother","det_diet_breadth_n","upper_elevation_m","lower_elevation_m","habitat_breadth_n", 
-             "relative_brain_size"]
+    nums = ["decimalLatitude","decimalLongitude","adult_mass_g","max_longevity_d",
+             "age_first_reproduction_d","litter_size_n","litters_per_year_n","dispersal_km",
+             "density_n_km2","home_range_km2","dphy_invertebrate","dphy_plant","det_vend",
+             "det_vect","det_scav","det_diet_breadth_n","altitude_breadth_m","EQ"]
     label = "roadkill_category"
     
     model = Classifier(attrs=attrs, numeric=nums, label=label)
