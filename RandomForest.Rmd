@@ -1,0 +1,1250 @@
+---
+title: "Merging datasets"
+author: "Pablo Medrano"
+date: "2025-11-25"
+output: html_document
+---
+
+```{r Loading packages}
+library(dplyr)
+library(stringr)
+library(readr)
+library(traitdata)
+library(tidyr)
+library(httr)
+library(jsonlite)
+data("bird_behav")
+
+```
+
+```{r Loading Birds traits}
+
+### GBIF FUNCTION WITH SYNONIMS ###
+
+get_gbif_name <- function(species_name) {
+  
+url <- "https://api.gbif.org/v1/species/match"
+response <- GET(url, query = list(name = species_name))
+  
+  if (status_code(response) != 200) {
+    return(data.frame(
+      query_name = species_name,
+      accepted_name_gbif = NA,
+      usageKey = NA,
+      synonym_1 = NA,
+      synonym_2 = NA
+    ))
+  }
+  
+  result <- fromJSON(content(response, "text", encoding = "UTF-8"))
+  
+  accepted <- if (!is.null(result$canonicalName)) result$canonicalName else NA
+  usageKey <- if (!is.null(result$usageKey)) result$usageKey else NA
+  
+  ### OBTAINING SYNONIMS ###
+
+  syn_vec <- c()
+  
+  if (!is.na(usageKey)) {
+    url_rel <- paste0("https://api.gbif.org/v1/species/", usageKey, "/related?limit=500")
+    response_rel <- GET(url_rel)
+    
+    if (status_code(response_rel) == 200) {
+      rel_result <- fromJSON(content(response_rel, "text", encoding = "UTF-8"))
+      
+      if (!is.null(rel_result$results)) {
+        
+        # If it is a data.frame
+        if (is.data.frame(rel_result$results)) {
+          df <- rel_result$results
+          
+          if ("taxonomicStatus" %in% names(df) && "scientificName" %in% names(df)) {
+            syn_df <- df[df$taxonomicStatus == "SYNONYM", ]
+            if (nrow(syn_df) > 0) {
+              # Cleaning to "Genus species"
+              syn_vec <- str_extract(syn_df$scientificName, "^[A-Z][a-z]+\\s[a-z]+")
+              syn_vec <- syn_vec[!is.na(syn_vec)]
+            }
+          }
+          
+        # if it is a list
+        } else if (is.list(rel_result$results)) {
+          for (entry in rel_result$results) {
+            if (!is.null(entry$taxonomicStatus) &&
+                entry$taxonomicStatus == "SYNONYM" &&
+                !is.null(entry$scientificName)) {
+              clean_syn <- str_extract(entry$scientificName, "^[A-Z][a-z]+\\s[a-z]+")
+              if (!is.na(clean_syn)) {
+                syn_vec <- c(syn_vec, clean_syn)
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+  # Removing duplicated synonims
+  syn_vec <- unique(syn_vec)
+  syn_vec <- setdiff(syn_vec, c(species_name, accepted))
+  
+  out <- data.frame(
+    query_name = species_name,
+    accepted_name_gbif = accepted,
+    usageKey = usageKey,
+    synonym_1 = if(length(syn_vec) >= 1) syn_vec[1] else NA,
+    synonym_2 = if(length(syn_vec) >= 2) syn_vec[2] else NA,
+    stringsAsFactors = FALSE
+  )
+  
+  return(out)
+}
+
+### LOADING IUCN as backbone###
+
+iucn <- read.csv("Datasets/aves_IUCNthreats.csv", stringsAsFactors = FALSE)
+
+# Extracting unique species from IUCN
+iucn_species <- unique(iucn$Scientific_name)
+
+# Cleaning NAs and empty strings 
+iucn_species <- iucn_species[!is.na(iucn_species) & iucn_species != ""]
+
+cat("Total de especies en IUCN:", length(iucn_species), "\n\n")
+
+### CONSULTING GBIF FOR IUCN ###
+
+taxonomy_master_list <- vector("list", length(iucn_species))
+
+for (i in seq_along(iucn_species)) {
+  sp <- iucn_species[i]
+  cat(i, "/", length(iucn_species), ":", sp, "\n")
+  
+  res <- tryCatch(
+    get_gbif_name(sp),
+    error = function(e) {
+      data.frame(
+        query_name = sp,
+        accepted_name_gbif = NA,
+        usageKey = NA,
+        synonym_1 = NA,
+        synonym_2 = NA
+      )
+    }
+  )
+  
+  taxonomy_master_list[[i]] <- res
+  
+  Sys.sleep(0.3)
+  
+  # saving every 100 species
+  if (i %% 100 == 0) {
+    tmp <- bind_rows(taxonomy_master_list[1:i])
+    write.csv(tmp, "taxonomy_master_temp.csv", row.names = FALSE)
+    cat("  → Guardado temporal en taxonomy_master_temp.csv\n")
+  }
+}
+
+taxonomy_master <- bind_rows(taxonomy_master_list)
+
+### CLEANING ACCEPTED NAME ###
+
+taxonomy_master <- taxonomy_master %>%
+  mutate(
+    accepted_name_gbif = case_when(
+      # If GBIF returned higher taxa, keep the original
+      accepted_name_gbif %in% c("Animalia", "Chordata", "Aves") ~ query_name,
+      # if no space (only genus), keept the orginal
+      !grepl(" ", accepted_name_gbif) ~ query_name,
+      # if it is NA, use the original
+      is.na(accepted_name_gbif) ~ query_name,
+      # or else, use GBIF
+      TRUE ~ accepted_name_gbif
+    )
+  )
+
+### FINAL STRUCTURE###
+
+# Renaming 
+taxonomy_master <- taxonomy_master %>%
+  rename(
+    iucn_name = query_name,           # IUCN NAME (backbone)
+    gbif_accepted = accepted_name_gbif # GBIF accepted name
+  ) %>%
+  select(iucn_name, gbif_accepted, synonym_1, synonym_2, usageKey)
+
+# Verifying
+cat("\n=== RESUMEN TAXONOMY MASTER ===\n")
+cat("Total species:", nrow(taxonomy_master), "\n")
+cat("different GBIF name:", sum(taxonomy_master$iucn_name != taxonomy_master$gbif_accepted, na.rm = TRUE), "\n")
+cat("at least 1 syninim:", sum(!is.na(taxonomy_master$synonym_1)), "\n")
+cat("2 synonims:", sum(!is.na(taxonomy_master$synonym_2)), "\n")
+
+# example species with synonims
+cat("\nEjemplos con sinónimos:\n")
+with_syns <- taxonomy_master %>%
+  filter(!is.na(synonym_1)) %>%
+  head(5)
+print(with_syns)
+
+write.csv(taxonomy_master, "taxonomy_master_iucn_based.csv", row.names = FALSE)
+
+### EXTENDED VERSION ###
+
+# If I want to add taxonomic info from IUCN
+taxonomy_master_extended <- taxonomy_master %>%
+  left_join(
+    iucn %>% 
+      select(Scientific_name, Order, Family.name, X2025.IUCN.Red.List.category) %>%
+      distinct(),
+    by = c("iucn_name" = "Scientific_name")
+  ) %>%
+  rename(
+    order_iucn = Order,
+    family_iucn = Family.name,
+    iucn_status = X2025.IUCN.Red.List.category
+  )
+
+write.csv(taxonomy_master_extended, "taxonomy_master_iucn_extended.csv", row.names = FALSE)
+cat("✓ Archivo extendido guardado: taxonomy_master_iucn_extended.csv\n")
+
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(traitdata)
+data("bird_behav")
+
+### 1. LOADING TAXONOMY MASTER (IUCN)
+
+taxonomy_master <- taxonomy_master_extended
+
+cat("species en taxonomy master (IUCN-based):", nrow(taxonomy_master), "\n\n")
+
+### LOADING AND CLEANING TRAITS DATASETS
+
+# Function for cleaning empty strings
+clean_empty_strings <- function(df) {
+  df %>%
+    mutate(across(where(is.character), ~ na_if(., ""))) %>%
+    mutate(across(where(is.character), ~ na_if(., " "))) %>%
+    mutate(across(where(is.character), ~ ifelse(str_trim(.) == "", NA, .)))
+}
+
+# Loading datasets
+avonet <- read.csv("Datasets/AVONET_birdlife.csv", stringsAsFactors = FALSE)
+birdbase <- read.csv("Datasets/Birdbase.csv", stringsAsFactors = FALSE)
+genlength <- read.csv("Datasets/GenLength_Bird_etal_2020.csv", stringsAsFactors = FALSE)
+birdbehav <- bird_behav
+
+# Selecting and cleaning columns
+iucn1 <- iucn %>% 
+  select(Scientific_name, 
+         order = Order, 
+         family = Family.name,
+         iucn_status = X2025.IUCN.Red.List.category,
+         agriculture = Agriculture_Aquaculture,
+         hunting = Biological_Resource_Use,
+         invasive = Invasive_Other_Problematic_Species,
+         climate = Climate_Change_Severe_Weather) %>% 
+  clean_empty_strings()
+
+avonet1 <- avonet %>% 
+  select(Species1, Family1, Order1, 
+         Beak.Length_Culmen, Beak.Length_Nares, Beak.Width, Beak.Depth, 
+         Tarsus.Length, Wing.Length, Kipps.Distance, Secondary1, 
+         Hand.Wing.Index, Tail.Length, Mass, 
+         Habitat, Migration, Trophic.Niche, Primary.Lifestyle,
+         Min.Latitude, Max.Latitude, Range.Size) %>%
+  clean_empty_strings()
+
+birdbase1 <- birdbase %>% 
+  select(Latin..BirdLife...IOC...Clements.AviList., 
+         HBW.BirdLife.International..v9.1., 
+         IOC.World.Bird.List..v15.1., 
+         eBird.Clements..V2024b., 
+         AviList.v1.2025, 
+         Order, X2024.IUCN.Red.List.category, 
+         ISL, RLM, LAT, Average.Mass, 
+         NormMin, Elevational.Range, NormMax,
+         Primary.Habitat, HB, Primary.Diet, DB, Clutch_Max) %>%
+  clean_empty_strings()
+
+genlength1 <- genlength %>% 
+  select(Scientific.name, Order, Family, Genus, 
+         Adult.survival, Age.at.first.breeding, 
+         Maximum.longevity, GenLength) %>% 
+  clean_empty_strings()
+
+bird_behav1 <- birdbehav %>% 
+  select(scientificNameStd, Family, RedlistCategory, 
+         LogRangeSize, LogBodyMass, Diet, Foraging, Migration, 
+         NestPlacement, Territoriality, Habitat, IslandDwelling, 
+         LogClutchSize, LogNightLights, LogHumanPopulationDensity) %>% 
+  clean_empty_strings()
+
+### FUNCTION FOR ADDING TRAITS WITH TAXONOMIC FALLBACK
+
+add_traits_progressive <- function(taxonomy_df, trait_df, trait_col_name, dataset_name) {
+  
+  cat("\n=== Procesando", dataset_name, "===\n")
+  
+  # Preparing traits (add by species if duplicated)
+  trait_df_agg <- trait_df %>%
+    group_by(across(all_of(trait_col_name))) %>%
+    summarise(
+      across(where(is.numeric), ~{
+        vals <- na.omit(.)
+        if(length(vals) > 0) first(vals) else NA_real_
+      }),
+      across(where(is.character), ~first(na.omit(.))),
+      across(where(is.factor), ~first(na.omit(.))),
+      .groups = "drop"
+    ) %>%
+    rename(match_name = all_of(trait_col_name)) %>%
+    filter(!is.na(match_name) & match_name != "")
+  
+  # Renaming columns
+  trait_df_agg <- trait_df_agg %>%
+    rename_with(~paste0(., "_", dataset_name), -match_name)
+  
+  # Identify taxonomy caolumns for match
+  tax_cols <- c("iucn_name", "gbif_accepted", 
+                grep("^synonym_", names(taxonomy_df), value = TRUE))
+  
+  result <- taxonomy_df
+  
+  # Trying the match 
+  for (tax_col in tax_cols) {
+    
+    # temporary dataframe keeping order
+    temp_match <- result %>%
+      select(all_of(tax_col)) %>%
+      mutate(row_id = row_number())
+    
+    names(temp_match)[1] <- "match_name"
+    
+    # Join with traits
+    temp_with_traits <- temp_match %>%
+      left_join(trait_df_agg, by = "match_name")
+    
+    # Identifying traits columns
+    trait_cols <- setdiff(names(temp_with_traits), c("match_name", "row_id"))
+    
+    if (length(trait_cols) == 0) next
+    
+    for (col in trait_cols) {
+      if (!col %in% names(result)) {
+        result[[col]] <- NA
+      }
+    }
+    
+    # Updating
+    for (col in trait_cols) {
+      needs_update <- is.na(result[[col]]) & !is.na(temp_with_traits[[col]])
+      if (sum(needs_update) > 0) {
+        result[[col]][needs_update] <- temp_with_traits[[col]][needs_update]
+      }
+    }
+    
+    # Reporting progress
+    n_filled <- sum(!is.na(result[[trait_cols[1]]]))
+    cat("  Después de", tax_col, "→", n_filled, "especies con datos\n")
+  }
+  
+  # Final
+  trait_cols_final <- grep(paste0("_", dataset_name, "$"), names(result), value = TRUE)
+  if (length(trait_cols_final) > 0) {
+    has_any <- rowSums(!is.na(result[trait_cols_final])) > 0
+    cat("  ✓ Cobertura:", sum(has_any), "/", nrow(result),
+        sprintf("(%.1f%%)\n", 100 * sum(has_any) / nrow(result)))
+  }
+  
+  return(result)
+}
+
+### ADDING EACH DATASET 
+
+traits_combined <- taxonomy_master
+
+# IUCN
+traits_combined <- add_traits_progressive(
+  traits_combined, iucn1, "Scientific_name", "IUCN"
+)
+
+# AVONET
+traits_combined <- add_traits_progressive(
+  traits_combined, avonet1, "Species1", "AVONET"
+)
+
+# BIRDBASE - Multiple taxonomies
+cat("\n", rep("=", 60), "\n", sep = "")
+cat("=== BIRDBASE with Multiple taxonomies ===\n")
+cat(rep("=", 60), "\n", sep = "")
+
+birdbase_tax_cols <- c(
+  "Latin..BirdLife...IOC...Clements.AviList.",
+  "HBW.BirdLife.International..v9.1.",
+  "IOC.World.Bird.List..v15.1.",
+  "eBird.Clements..V2024b.",
+  "AviList.v1.2025"
+)
+
+initial_cov <- 0
+
+for (i in seq_along(birdbase_tax_cols)) {
+  tax_col <- birdbase_tax_cols[i]
+  cat(sprintf("\n[%d/%d] %s\n", i, length(birdbase_tax_cols), tax_col))
+  
+  # Previous cover
+  bb_cols <- grep("_BirdBase$", names(traits_combined), value = TRUE)
+  before <- if(length(bb_cols) > 0) sum(rowSums(!is.na(traits_combined[bb_cols])) > 0) else 0
+  if (i == 1) initial_cov <- before
+  
+  # Adding traits
+  traits_combined <- add_traits_progressive(traits_combined, birdbase1, tax_col, "BirdBase")
+  
+  # LAter cover
+  bb_cols <- grep("_BirdBase$", names(traits_combined), value = TRUE)
+  after <- sum(rowSums(!is.na(traits_combined[bb_cols])) > 0)
+  
+  cat(sprintf("    ➕ %d especies nuevas\n", after - before))
+}
+
+cat(sprintf("\n📈 Ganancia total BirdBase: +%d especies\n", after - initial_cov))
+cat(rep("=", 60), "\n\n", sep = "")
+
+# GENLENGTH
+traits_combined <- add_traits_progressive(
+  traits_combined, genlength1, "Scientific.name", "GenLength"
+)
+
+# BIRDBEHAV
+traits_combined <- add_traits_progressive(
+  traits_combined, bird_behav1, "scientificNameStd", "BirdBehav"
+)
+
+###################COMBINING VARIABLES WITH DIFFERENT NAMES IN VARIABLES IN DATASETS
+complete1 <- sapply(traits_combined, function(x) mean(!is.na(x)) * 100)
+print(complete1)
+
+traits_combined$order_IUCN <- NULL
+traits_combined$Order1_AVONET <- NULL
+traits_combined$Order_BirdBase <- NULL
+traits_combined$Order_GenLength <- NULL
+traits_combined$family_IUCN <- NULL
+traits_combined$Family1_AVONET <- NULL
+traits_combined$Family_GenLength <- NULL
+traits_combined$Family_BirdBehav <- NULL
+traits_combined$Genus_GenLength <- NULL
+traits_combined$HBW.BirdLife.International..v9.1._BirdBase <- NULL
+traits_combined$IOC.World.Bird.List..v15.1._BirdBase <- NULL
+traits_combined$eBird.Clements..V2024b._BirdBase <- NULL
+traits_combined$AviList.v1.2025_BirdBase <- NULL
+
+#Combining range size columns, but first converting range size from birdbehav to exp
+traits_combined$LogRangeSize_BirdBehav <- exp(traits_combined$LogRangeSize_BirdBehav)
+traits_combined <- traits_combined %>%
+  mutate(across(c(Range.Size_AVONET, LogRangeSize_BirdBehav), ~ na_if(trimws(.), ""))) %>%
+  mutate(Range_size = coalesce(Range.Size_AVONET, LogRangeSize_BirdBehav))
+
+traits_combined$Range.Size_AVONET <- NULL
+traits_combined$LogRangeSize_BirdBehav <- NULL
+
+#Now merging body mass columns, but first converting log to exp for consistency between both columns, then converting empty cells to NA, and then merging
+traits_combined$LogBodyMass_BirdBehav <- exp(traits_combined$LogBodyMass_BirdBehav)
+traits_combined <- traits_combined %>%
+  mutate(LogBodyMass_BirdBehav = as.numeric(LogBodyMass_BirdBehav),
+    Average.Mass_BirdBase = as.numeric(Average.Mass_BirdBase)) %>%
+  mutate(Body_mass = coalesce(Mass_AVONET, Average.Mass_BirdBase, LogBodyMass_BirdBehav))
+
+traits_combined$Mass_AVONET <- NULL
+traits_combined$LogBodyMass_BirdBehav <- NULL
+traits_combined$Average.Mass_BirdBase <- NULL
+traits_combined$iucn_status_IUCN <- NULL
+traits_combined$RedlistCategory_BirdBehav <- NULL
+traits_combined$X2024.IUCN.Red.List.category_BirdBase <- NULL
+
+#Now merging clutch size columns, but first converting log to exp for consistency between both columns, then converting empty cells to NA, and then merging
+traits_combined$LogClutchSize_BirdBehav <- exp(traits_combined$LogClutchSize_BirdBehav)
+traits_combined <- traits_combined %>%
+  mutate(across(c(Clutch_Max_BirdBase, LogClutchSize_BirdBehav), ~ na_if(trimws(.), ""))) %>%
+  mutate(Clutch_size = coalesce(Clutch_Max_BirdBase, LogClutchSize_BirdBehav))
+
+traits_combined$Clutch_Max_BirdBase <- NULL
+traits_combined$LogClutchSize_BirdBehav <- NULL
+
+#Now merging the diet columns 
+traits_combined <- traits_combined %>%
+  mutate(Primary.Diet_BirdBase = na_if(Primary.Diet_BirdBase, "No Information"),  
+    Diet = coalesce(Trophic.Niche_AVONET, Primary.Diet_BirdBase, Diet_BirdBehav))
+
+traits_combined$Trophic.Niche_AVONET <- NULL
+traits_combined$Primary.Diet_BirdBase <- NULL
+traits_combined$Diet_BirdBehav <- NULL
+
+#Unifying diet categories
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet == "Aquatic predator", "AquaticAnimals", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Generalist", "Omnivore", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Seeds", "Seed", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Vertebrate", "Vertebrates", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "TerrestrialPlants", "Plant", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "AquaticPlants", "Plant", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Invertebrates", "Invertebrate", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Invertivore", "Invertebrate", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Plant", "Herbivore", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Herbivore terrestrial", "Herbivore", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Nectarivore", "Nectar", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Vertivore", "Vertebrates", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Frugivore", "Fruit", Diet))
+
+traits_combined <- traits_combined %>%
+  mutate(Diet = if_else(Diet ==  "Fish", "AquaticAnimals", Diet))
+
+#Merging habitat columns
+traits_combined <- traits_combined %>%
+  mutate(Habitat = coalesce(Primary.Habitat_BirdBase, Habitat_AVONET))
+traits_combined$Primary.Habitat_BirdBase <- NULL
+traits_combined$Habitat_AVONET <- NULL
+traits_combined$Habitat_BirdBehav <- NULL
+
+traits_combined <- traits_combined %>%
+  mutate(Habitat = if_else(Habitat == "Shrubland", "Shrub", Habitat))
+
+#Now merging Migration columns, but first converting empty cells to NA, and then merging
+traits_combined <- traits_combined %>%
+  mutate(across(c(Migration_AVONET, Migration_BirdBehav), ~ na_if(trimws(.), ""))) %>%
+  mutate(Migration = coalesce(Migration_AVONET, Migration_BirdBehav))
+
+traits_combined$Migration_AVONET <- NULL
+traits_combined$Migration_BirdBehav <- NULL
+
+#Unifying migration categories
+traits_combined <- traits_combined %>%
+  mutate(Migration = if_else(Migration == "1", "Sedentary", Migration))
+
+traits_combined <- traits_combined %>%
+  mutate(Migration = if_else(Migration == "2", "PartiallyMigratory", Migration))
+
+traits_combined <- traits_combined %>%
+  mutate(Migration = if_else(Migration == "3", "Migratory", Migration))
+
+traits_combined$usageKey <- NULL
+traits_combined$Latin..BirdLife...IOC...Clements.AviList._BirdBase <- NULL
+traits_combined$IslandDwelling_BirdBehav <- NULL
+traits_combined$Territoriality_BirdBehav <- NULL
+
+complete1 <- sapply(traits_combined, function(x) mean(!is.na(x)) * 100)
+print(complete1)
+
+traits_combined <- traits_combined %>%
+  mutate(extinction_risk = case_when(
+    iucn_status %in% c("NT","VU", "EN", "CR", "CR (PE)", "EW", "EX", "CR (PEW)") ~ "Higher_risk",
+    iucn_status %in% c("LC") ~ "Lower_risk"))
+
+traits_combined <- traits_combined %>% mutate(across(everything(), ~gsub(",", ".", .)))
+
+str(traits_combined)
+
+traits_combined$order_iucn  <- as.factor(traits_combined$order_iucn)
+traits_combined$family_iucn <- as.factor(traits_combined$family_iucn)
+traits_combined$iucn_status <- as.factor(traits_combined$iucn_status)
+traits_combined$agriculture_IUCN <- as.factor(traits_combined$agriculture_IUCN)
+traits_combined$hunting_IUCN     <- as.factor(traits_combined$hunting_IUCN)
+traits_combined$invasive_IUCN    <- as.factor(traits_combined$invasive_IUCN)
+traits_combined$climate_IUCN     <- as.factor(traits_combined$climate_IUCN)
+traits_combined$Beak.Length_Culmen_AVONET   <- as.numeric(traits_combined$Beak.Length_Culmen_AVONET)
+traits_combined$Beak.Length_Nares_AVONET    <- as.numeric(traits_combined$Beak.Length_Nares_AVONET)
+traits_combined$Beak.Width_AVONET           <- as.numeric(traits_combined$Beak.Width_AVONET)
+traits_combined$Beak.Depth_AVONET           <- as.numeric(traits_combined$Beak.Depth_AVONET)
+traits_combined$Tarsus.Length_AVONET        <- as.numeric(traits_combined$Tarsus.Length_AVONET)
+traits_combined$Wing.Length_AVONET          <- as.numeric(traits_combined$Wing.Length_AVONET)
+traits_combined$Kipps.Distance_AVONET       <- as.numeric(traits_combined$Kipps.Distance_AVONET)
+traits_combined$Secondary1_AVONET           <- as.numeric(traits_combined$Secondary1_AVONET)
+traits_combined$Hand.Wing.Index_AVONET      <- as.numeric(traits_combined$Hand.Wing.Index_AVONET)
+traits_combined$Tail.Length_AVONET          <- as.numeric(traits_combined$Tail.Length_AVONET)
+traits_combined$Min.Latitude_AVONET         <- as.numeric(traits_combined$Min.Latitude_AVONET)
+traits_combined$Max.Latitude_AVONET         <- as.numeric(traits_combined$Max.Latitude_AVONET)
+traits_combined$Primary.Lifestyle_AVONET <- as.factor(traits_combined$Primary.Lifestyle_AVONET)
+traits_combined$Foraging_BirdBehav       <- as.factor(traits_combined$Foraging_BirdBehav)
+traits_combined$NestPlacement_BirdBehav  <- as.factor(traits_combined$NestPlacement_BirdBehav)
+traits_combined$Diet                     <- as.factor(traits_combined$Diet)
+traits_combined$Habitat                  <- as.factor(traits_combined$Habitat)
+traits_combined$Migration                <- as.factor(traits_combined$Migration)
+traits_combined$RLM_BirdBase             <- as.factor(traits_combined$RLM_BirdBase)
+traits_combined$ISL_BirdBase               <- as.factor(traits_combined$ISL_BirdBase)
+traits_combined$LAT_BirdBase               <- as.factor(traits_combined$LAT_BirdBase)
+traits_combined$Elevational.Range_BirdBase <- as.numeric(traits_combined$Elevational.Range_BirdBase)
+traits_combined$HB_BirdBase                <- as.numeric(traits_combined$HB_BirdBase)
+traits_combined$DB_BirdBase                <- as.numeric(traits_combined$DB_BirdBase)
+traits_combined$NormMin_BirdBase           <- as.numeric(traits_combined$NormMin_BirdBase)
+traits_combined$NormMax_BirdBase           <- as.numeric(traits_combined$NormMax_BirdBase)
+traits_combined$Adult.survival_GenLength        <- as.numeric(traits_combined$Adult.survival_GenLength)
+traits_combined$Age.at.first.breeding_GenLength <- as.numeric(traits_combined$Age.at.first.breeding_GenLength)
+traits_combined$Maximum.longevity_GenLength     <- as.numeric(traits_combined$Maximum.longevity_GenLength)
+traits_combined$GenLength_GenLength             <- as.numeric(traits_combined$GenLength_GenLength)
+traits_combined$LogNightLights_BirdBehav <- as.numeric(traits_combined$LogNightLights_BirdBehav)
+traits_combined$LogHumanPopulationDensity_BirdBehav <- as.numeric(traits_combined$LogHumanPopulationDensity_BirdBehav)
+traits_combined$Range_size <- as.numeric(traits_combined$Range_size)
+traits_combined$Body_mass  <- as.numeric(traits_combined$Body_mass)
+traits_combined$Clutch_size <- as.numeric(traits_combined$Clutch_size)
+
+
+### EXTINCTION RISK (factor)
+
+traits_combined$extinction_risk <- factor(
+  traits_combined$extinction_risk,
+  levels = c("Lower_risk", "Higher_risk"),
+  ordered = TRUE
+)
+
+traits_combined$synonym_1 <- NULL
+traits_combined$synonym_2 <- NULL
+
+#Removing those DD species, as they are not included as lower or higher risk
+traits_combined <- subset(traits_combined, iucn_status != "DD")
+
+#Removing the birdbehav dataset variables as their variables have the lowest completeness (73.47%). Also, variables such as night lights and human population density are not even candidates for imputation as they are not animal traits. 
+traits_combined1 <- traits_combined %>% select(-LogNightLights_BirdBehav, -LogHumanPopulationDensity_BirdBehav, -Foraging_BirdBehav, -NestPlacement_BirdBehav)
+
+complete1 <- sapply(traits_combined1, function(x) mean(!is.na(x)) * 100)
+print(complete1)
+
+#This dataset only has complete variables
+traits_combined_noNA <- traits_combined1[complete.cases(traits_combined1), ]
+
+#renaming variables
+new_names <- c(
+  Species_name            = "iucn_name",
+  GBIF_name               = "gbif_accepted",
+  Order                   = "order_iucn",
+  Family                  = "family_iucn",
+  IUCN_status             = "iucn_status",
+  Agriculture             = "agriculture_IUCN",
+  Hunting                 = "hunting_IUCN",
+  Invasive_species        = "invasive_IUCN",
+  Climate_change          = "climate_IUCN",
+  Beak_length_culmen      = "Beak.Length_Culmen_AVONET",
+  Beak_length_nares       = "Beak.Length_Nares_AVONET",
+  Beak_width              = "Beak.Width_AVONET",
+  Beak_depth              = "Beak.Depth_AVONET",
+  Tarsus_length           = "Tarsus.Length_AVONET",
+  Wing_length             = "Wing.Length_AVONET",
+  Kipps_distance          = "Kipps.Distance_AVONET",
+  Secondary1              = "Secondary1_AVONET",
+  Hand_wing_index         = "Hand.Wing.Index_AVONET",
+  Tail_length             = "Tail.Length_AVONET",
+  Minimum_latitude        = "Min.Latitude_AVONET",
+  Maximum_latitude        = "Max.Latitude_AVONET",
+  Primary_lifestyle       = "Primary.Lifestyle_AVONET",
+  Island_restricted_breeding = "ISL_BirdBase",
+  Latitudinal_range       = "LAT_BirdBase",
+  Elevational_range       = "Elevational.Range_BirdBase",
+  Habitat_breadth         = "HB_BirdBase",
+  Diet_breadth            = "DB_BirdBase",
+  Realm                   = "RLM_BirdBase",
+  Minimum_elevation       = "NormMin_BirdBase",
+  Maximum_elevation       = "NormMax_BirdBase",
+  Adult_survival_annual   = "Adult.survival_GenLength",
+  Age_at_first_breeding   = "Age.at.first.breeding_GenLength",
+  Maximum_longevity       = "Maximum.longevity_GenLength",
+  Generation_length       = "GenLength_GenLength",
+  Range_size              = "Range_size",
+  Body_mass               = "Body_mass",
+  Clutch_size             = "Clutch_size",
+  Diet                    = "Diet",
+  Habitat                 = "Habitat",
+  Migration               = "Migration",
+  Extinction_risk         = "extinction_risk"
+)
+
+traits_combined_noNA <- traits_combined_noNA %>%rename(all_of(new_names))
+
+#I realized that Realm data is creating unnecessary categories. For example, PI and IP are different categories although they refer to the same thing (Indonesian and Palearctic realms). Therefore, correcting that
+
+# Function for alphabetic order for each Realm
+standardize_realm <- function(realm_string) {
+  # converting to uppercase
+  realm_upper <- toupper(realm_string)
+  
+  # Separating individual letters, alphabetic order, recombine
+  letters <- strsplit(realm_upper, "")[[1]]
+  sorted_letters <- sort(letters)
+  standardized <- paste(sorted_letters, collapse = "")
+  
+  return(standardized)
+}
+
+# Applying to all the column
+traits_combined_noNA$Realm <- sapply(traits_combined_noNA$Realm, standardize_realm)
+
+#Dropping inexistent levels from IUCN status
+traits_combined_noNA$IUCN_status <- droplevels(traits_combined_noNA$IUCN_status)
+
+write.csv(traits_combined_noNA, "traits_combined_noNA_5Dece25.csv", row.names = FALSE, quote = FALSE)
+
+```
+
+```{r correlations}
+
+library(corrplot)
+library(reshape2)
+str(traits_combined_noNA)
+
+# Selecting only numeric variables 
+numeric_data <- traits_combined_noNA %>% select(where(is.numeric)) 
+
+# Correlatin matrix
+cor_matrix <- cor(numeric_data, use = "pairwise.complete.obs")
+
+write.csv(cor_matrix, "correlation_matrix.csv")
+
+# Figure
+library(corrplot)
+png("correlation_plot.png", width = 1200, height = 1200, res = 100)
+corrplot(cor_matrix, 
+         method = "color",
+         type = "upper",
+         order = "hclust",
+         tl.cex = 0.7,
+         tl.col = "black")
+dev.off()
+
+# Fiunding highly correlated pairs 0.7
+cor_long <- melt(cor_matrix)
+names(cor_long) <- c("var1", "var2", "correlation")
+
+high_cor <- cor_long %>%
+  filter(abs(correlation) > 0.7,
+         var1 != var2,
+         as.character(var1) < as.character(var2)) %>%
+  arrange(desc(abs(correlation)))
+
+print(high_cor)
+
+```
+
+```{r RF with k-fold crossvalidation}
+
+library(ranger)
+library(caret)
+library(ggplot2)
+library(data.table)
+library(cowplot) 
+library(pdp)
+library(writexl)
+
+BirdTraits <- traits_combined_noNA
+
+set.seed(42)
+n_trees <- 2000
+
+# PREDICTORS
+
+predictors <- setdiff(names(BirdTraits), c(
+  "Species_name", "GBIF_name", "IUCN_status",
+  "Agriculture", "Hunting", "Invasive_species", "Climate_change",
+  "Beak_length_nares", "Beak_width", "Kipps_distance", "Secondary1",
+  "Age_at_first_breeding", "Maximum_longevity", "Extinction_risk"
+))
+
+predictorswthreats <- setdiff(names(BirdTraits), c(
+  "Species_name", "GBIF_name", "IUCN_status",
+  "Beak_length_nares", "Beak_width", "Kipps_distance", "Secondary1",
+  "Age_at_first_breeding", "Maximum_longevity", "Extinction_risk"
+))
+
+# 2. STRATIFIED FOLDS
+
+folds <- createFolds(BirdTraits$Extinction_risk, k = 10, returnTrain = TRUE)
+
+cat("Distribución de clases:\n")
+print(table(BirdTraits$Extinction_risk))
+cat("\nNº de folds:", length(folds), "\n")
+cat("Tamaño aproximado de train:", length(folds[[1]]), "\n")
+cat("Tamaño aproximado de test:", nrow(BirdTraits) - length(folds[[1]]), "\n\n")
+
+# EVALUATION FUNCTION
+
+evaluate_fold <- function(pred_probs, real, positive_class = "Higher_risk") {
+  pred_class  <- colnames(pred_probs)[max.col(pred_probs, ties.method = "first")]
+  pred_factor <- factor(pred_class, levels = levels(real))
+  cm <- confusionMatrix(pred_factor, real, positive = positive_class)
+  
+  data.frame(
+    Accuracy         = as.numeric(cm$overall["Accuracy"]),
+    Kappa            = as.numeric(cm$overall["Kappa"]),
+    # Higher_risk 
+    Precision_Higher = as.numeric(cm$byClass["Pos Pred Value"]),
+    Recall_Higher    = as.numeric(cm$byClass["Sensitivity"]),
+    F1_Higher        = as.numeric(cm$byClass["F1"]),
+    # Lower_risk 
+    Precision_Lower  = as.numeric(cm$byClass["Neg Pred Value"]),
+    Recall_Lower     = as.numeric(cm$byClass["Specificity"]),
+    F1_Lower         = as.numeric(2 * cm$byClass["Neg Pred Value"] * cm$byClass["Specificity"] /
+                                 (cm$byClass["Neg Pred Value"] + cm$byClass["Specificity"])),
+    # Macro F1
+    F1_Macro         = as.numeric((cm$byClass["F1"] +
+                                  2 * cm$byClass["Neg Pred Value"] * cm$byClass["Specificity"] /
+                                  (cm$byClass["Neg Pred Value"] + cm$byClass["Specificity"])) / 2)
+  )
+}
+
+# 4. K-FOLD: NO HUMAN THREATS
+
+results_nothreats        <- vector("list", length(folds))
+importance_nothreats_list <- vector("list", length(folds))
+
+for(i in seq_along(folds)){
+  cat("Fold", i, "/", length(folds), "\n")
+  
+  train_idx <- folds[[i]]
+  test_idx  <- setdiff(1:nrow(BirdTraits), train_idx)
+  
+  train_cv <- BirdTraits[train_idx, c(predictors, "Extinction_risk")]
+  test_cv  <- BirdTraits[test_idx,  c(predictors, "Extinction_risk")]
+  
+  model_cv <- ranger(
+    Extinction_risk ~ .,
+    data        = train_cv,
+    num.trees   = n_trees,
+    importance  = "permutation",
+    probability = TRUE,
+    seed        = 42
+  )
+  
+  pred_probs <- predict(model_cv, data = test_cv[, predictors])$predictions
+  results_nothreats[[i]]         <- evaluate_fold(pred_probs, test_cv$Extinction_risk)
+  importance_nothreats_list[[i]] <- importance(model_cv)
+}
+
+# metrics
+metrics_nothreats_cv <- do.call(rbind, results_nothreats)
+
+cat("\n--- no human threats ---\n")
+cat(sprintf("Accuracy        : %.3f ± %.3f\n", mean(metrics_nothreats_cv$Accuracy),         sd(metrics_nothreats_cv$Accuracy)))
+cat("\n  -- Higher_risk --\n")
+cat(sprintf("Precision_Higher: %.3f ± %.3f\n", mean(metrics_nothreats_cv$Precision_Higher),  sd(metrics_nothreats_cv$Precision_Higher)))
+cat(sprintf("Recall_Higher   : %.3f ± %.3f\n", mean(metrics_nothreats_cv$Recall_Higher),     sd(metrics_nothreats_cv$Recall_Higher)))
+cat(sprintf("F1_Higher       : %.3f ± %.3f\n", mean(metrics_nothreats_cv$F1_Higher),         sd(metrics_nothreats_cv$F1_Higher)))
+cat("\n  -- Lower_risk --\n")
+cat(sprintf("Precision_Lower : %.3f ± %.3f\n", mean(metrics_nothreats_cv$Precision_Lower),   sd(metrics_nothreats_cv$Precision_Lower)))
+cat(sprintf("Recall_Lower    : %.3f ± %.3f\n", mean(metrics_nothreats_cv$Recall_Lower),      sd(metrics_nothreats_cv$Recall_Lower)))
+cat(sprintf("F1_Lower        : %.3f ± %.3f\n", mean(metrics_nothreats_cv$F1_Lower),          sd(metrics_nothreats_cv$F1_Lower)))
+
+# average importance among folds
+importance_nothreats_avg <- rowMeans(do.call(cbind, importance_nothreats_list))
+importance_df <- data.frame(
+  Variable   = names(importance_nothreats_avg),
+  Importance = importance_nothreats_avg
+) %>% arrange(desc(Importance))
+
+write.csv(importance_df,        "~/extinction/Outputs/importancevariablesnothreats.csv", row.names = FALSE)
+write.csv(metrics_nothreats_cv, "~/extinction/Outputs/cv_results_nothreats.csv",         row.names = FALSE)
+
+# K-FOLD: with human threats
+results_wthreats         <- vector("list", length(folds))
+importance_wthreats_list <- vector("list", length(folds))
+
+for(i in seq_along(folds)){
+  cat("Fold", i, "/", length(folds), "\n")
+  
+  train_idx <- folds[[i]]
+  test_idx  <- setdiff(1:nrow(BirdTraits), train_idx)
+  
+  train_cv <- BirdTraits[train_idx, c(predictorswthreats, "Extinction_risk")]
+  test_cv  <- BirdTraits[test_idx,  c(predictorswthreats, "Extinction_risk")]
+  
+  model_cv <- ranger(
+    Extinction_risk ~ .,
+    data        = train_cv,
+    num.trees   = n_trees,
+    importance  = "permutation",
+    probability = TRUE,
+    seed        = 42
+  )
+  
+  pred_probs <- predict(model_cv, data = test_cv[, predictorswthreats])$predictions
+  results_wthreats[[i]]         <- evaluate_fold(pred_probs, test_cv$Extinction_risk)
+  importance_wthreats_list[[i]] <- importance(model_cv)
+}
+
+# metricas
+metrics_wthreats_cv <- do.call(rbind, results_wthreats)
+
+cat("\n--- with human threats ---\n")
+cat(sprintf("Accuracy        : %.3f ± %.3f\n", mean(metrics_wthreats_cv$Accuracy),         sd(metrics_wthreats_cv$Accuracy)))
+cat("\n  -- Higher_risk --\n")
+cat(sprintf("Precision_Higher: %.3f ± %.3f\n", mean(metrics_wthreats_cv$Precision_Higher),  sd(metrics_wthreats_cv$Precision_Higher)))
+cat(sprintf("Recall_Higher   : %.3f ± %.3f\n", mean(metrics_wthreats_cv$Recall_Higher),     sd(metrics_wthreats_cv$Recall_Higher)))
+cat(sprintf("F1_Higher       : %.3f ± %.3f\n", mean(metrics_wthreats_cv$F1_Higher),         sd(metrics_wthreats_cv$F1_Higher)))
+cat("\n  -- Lower_risk --\n")
+cat(sprintf("Precision_Lower : %.3f ± %.3f\n", mean(metrics_wthreats_cv$Precision_Lower),   sd(metrics_wthreats_cv$Precision_Lower)))
+cat(sprintf("Recall_Lower    : %.3f ± %.3f\n", mean(metrics_wthreats_cv$Recall_Lower),      sd(metrics_wthreats_cv$Recall_Lower)))
+cat(sprintf("F1_Lower        : %.3f ± %.3f\n", mean(metrics_wthreats_cv$F1_Lower),          sd(metrics_wthreats_cv$F1_Lower)))
+
+# average importance among folds
+importance_wthreats_avg <- rowMeans(do.call(cbind, importance_wthreats_list))
+importance_df_wthreats <- data.frame(
+  Variable   = names(importance_wthreats_avg),
+  Importance = importance_wthreats_avg
+) %>% arrange(desc(Importance))
+
+write.csv(importance_df_wthreats, "~/extinction/Outputs/importancevariables_wthreats.csv", row.names = FALSE)
+write.csv(metrics_wthreats_cv,    "~/extinction/Outputs/cv_results_wthreats.csv",          row.names = FALSE)
+
+# FINAL MODELS WITH ALL DATA FOR PDPs
+
+my_forest <- ranger(
+  Extinction_risk ~ .,
+  data        = BirdTraits[, c(predictors, "Extinction_risk")],
+  num.trees   = n_trees,
+  importance  = "permutation",
+  probability = TRUE,
+  seed        = 42
+)
+
+my_forest_wthreats <- ranger(
+  Extinction_risk ~ .,
+  data        = BirdTraits[, c(predictorswthreats, "Extinction_risk")],
+  num.trees   = n_trees,
+  importance  = "permutation",
+  probability = TRUE,
+  seed        = 42
+)
+
+# EXPORTING FOLDS FOR PYTHON
+
+# TRAINING
+for(i in seq_along(folds)){
+  train_idx <- folds[[i]] - 1 
+  write.csv(
+    data.frame(row_index = train_idx),
+    paste0("~/extinction/Outputs/fold_", i, "_train_idx.csv"),
+    row.names = FALSE
+  )
+}
+
+# TESTING
+for(i in seq_along(folds)){
+  test_idx <- setdiff(1:nrow(BirdTraits), folds[[i]]) - 1 
+  write.csv(
+    data.frame(row_index = test_idx),
+    paste0("~/extinction/Outputs/fold_", i, "_test_idx.csv"),
+    row.names = FALSE
+  )
+}
+
+write.csv(BirdTraits, "~/extinction/Outputs/BirdTraits_for_python.csv", row.names = FALSE)
+```
+
+```{r Dependence plots for the alternative model(no IUCN human threats)}
+
+# PARTIAL DEPENDENCE PLOTS
+predictors_list <- c("Order", "Family", "Beak_length_culmen", "Beak_depth", "Tarsus_length", "Wing_length", "Hand_wing_index", "Tail_length", "Minimum_latitude", "Maximum_latitude", "Primary_lifestyle", "Island_restricted_breeding", "Latitudinal_range", "Elevational_range", "Habitat_breadth", "Diet_breadth", "Realm", "Minimum_elevation", "Maximum_elevation", "Adult_survival_annual", "Generation_length", "Range_size", "Body_mass", "Clutch_size", "Diet", "Habitat", "Migration")
+
+# Creating folders
+dir.create("~/extinction/PDP_Plots_crossv", showWarnings = FALSE)
+dir.create("~/extinction/PDP_Plots_crossv/Continuous", showWarnings = FALSE)
+dir.create("~/extinction/PDP_Plots_crossv/Categorical", showWarnings = FALSE)
+
+all_pdp <- list()
+
+for(var in predictors_list){
+  cat("Procesando:", var, "\n")
+  
+  pd <- pdp::partial(
+    object = my_forest,
+    pred.var = var,
+    train = BirdTraits[, c(predictors, "Extinction_risk")],
+    prob = TRUE,
+    which.class = 2
+  )
+  
+  all_pdp[[var]] <- pd
+}
+
+# Plotting function
+plot_pdp <- function(pdp_data, xvar){
+  if(is.factor(pdp_data[[xvar]]) || is.character(pdp_data[[xvar]])){
+    p <- ggplot(pdp_data, aes(x = .data[[xvar]], y = yhat)) +
+      geom_col(fill = "steelblue") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      labs(y = "Predicted Probability (Higher Risk)")
+  } else {
+    p <- ggplot(pdp_data, aes(x = .data[[xvar]], y = yhat)) +
+      geom_line(color = "blue") +
+      theme_bw() +
+      labs(y = "Predicted Probability (Higher Risk)")
+  }
+  return(p)
+}
+
+for(var in names(all_pdp)){
+  pdp_data <- all_pdp[[var]]
+  
+  folder <- ifelse(is.factor(pdp_data[[var]]) || is.character(pdp_data[[var]]),
+                   "Categorical", "Continuous")
+  
+  p <- plot_pdp(pdp_data, var)
+  
+  ggsave(filename = paste0("~/extinction/PDP_Plots_crossv/", folder, "/", var, ".png"),
+         plot = p, width = 6, height = 4)
+}
+
+# COMBINED PANEL- TOP 10 VARIABLES
+
+# Top 10 variables (based on importance)
+top_10_vars <- c("Range_size", "Body_mass", "Generation_length", "Elevational_range", 
+                 "Minimum_latitude", "Maximum_elevation", "Maximum_latitude", 
+                 "Wing_length", "Island_restricted_breeding", "Tarsus_length")
+
+# list of plots for panel
+plot_list_top10 <- list()
+
+for(i in seq_along(top_10_vars)){
+  var <- top_10_vars[i]
+  
+  if(!var %in% names(all_pdp)){
+    warning(paste("Variable", var, "no encontrada en all_pdp"))
+    next
+  }
+  
+  pdp_data <- all_pdp[[var]]
+  
+  show_y_label <- (i %% 2 == 1)
+  
+  # categorical?
+  is_categorical <- is.factor(pdp_data[[var]]) || is.character(pdp_data[[var]])
+  
+  # optimized plot according to variable type
+  if(is_categorical){
+    # Plot categorical variables 
+    p <- ggplot(pdp_data, aes(x = .data[[var]], y = yhat)) +
+      geom_col(fill = "gray50", width = 0.7) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 9, face = "bold", margin = margin(t = 5)),
+        axis.title.y = if(show_y_label) element_text(size = 9, face = "bold", margin = margin(r = 5)) else element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "gray90"),
+        plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm")
+      ) +
+      labs(x = gsub("_", " ", var), 
+           y = if(show_y_label) "Higher extinction risk" else "") +
+      ylim(0, 0.7)
+    
+  } else {
+    # **Plot para variables continuas**
+    p <- ggplot(pdp_data, aes(x = .data[[var]], y = yhat)) +
+      geom_ribbon(aes(ymin = 0, ymax = yhat), 
+                  fill = "gray70", alpha = 0.5) +
+      geom_line(color = "black", size = 1) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 8, angle = 0),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 9, face = "bold", margin = margin(t = 5)),
+        axis.title.y = if(show_y_label) element_text(size = 9, face = "bold", margin = margin(r = 5)) else element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "gray90"),
+        plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm")
+      ) +
+      labs(x = gsub("_", " ", var), 
+           y = if(show_y_label) "Higher extinction risk" else "") +
+      ylim(0, 0.7)
+  }
+  
+  plot_list_top10[[var]] <- p
+  cat("  ✓", var, "añadido al panel\n")
+}
+
+# Combining plots in 2x5 panel
+final_plot <- plot_grid(
+  plotlist = plot_list_top10,
+  ncol = 2,
+  nrow = 5,
+  labels = "AUTO",
+  label_size = 11,
+  align = "hv"
+)
+
+ggsave("~/extinction/PDP_Plots_crossv/PDP_Combined_Top10_crossv.png", 
+       plot = final_plot, 
+       width = 7,
+       height = 10,
+       dpi = 300)
+
+```
+
+```{r Dependence plots for the main model(with IUCN human threats)}
+
+# PARTIAL DEPENDENCE PLOTS - WITH THREATS
+predictors_listwt <- c("Order", "Family", "Beak_length_culmen", "Beak_depth", "Tarsus_length", "Wing_length", "Hand_wing_index", "Tail_length", "Minimum_latitude", "Maximum_latitude", "Primary_lifestyle", "Island_restricted_breeding", "Latitudinal_range", "Elevational_range", "Habitat_breadth", "Diet_breadth", "Realm", "Minimum_elevation", "Maximum_elevation", "Adult_survival_annual", "Generation_length", "Range_size", "Body_mass", "Clutch_size", "Diet", "Habitat", "Migration", "Agriculture", "Hunting", "Invasive_species", "Climate_change")
+
+dir.create("~/extinction/PDP_Plotswt_crossv", showWarnings = FALSE)
+dir.create("~/extinction/PDP_Plotswt_crossv/Continuouswt", showWarnings = FALSE)
+dir.create("~/extinction/PDP_Plotswt_crossv/Categoricalwt", showWarnings = FALSE)
+
+# PDP for all variables
+all_pdpwt <- list()
+
+for(var in predictors_listwt){
+  cat("Procesando:", var, "\n")
+  
+  pd1 <- pdp::partial(
+    object = my_forest_wthreats,
+    pred.var = var,
+    train = BirdTraits[, c(predictorswthreats, "Extinction_risk")],
+    prob = TRUE,
+    which.class = 2
+  )
+  
+  all_pdpwt[[var]] <- pd1
+}
+
+# Plotting function 
+plot_pdpwt <- function(pdp_data, xvar){
+  if(is.factor(pdp_data[[xvar]]) || is.character(pdp_data[[xvar]])){
+    p1 <- ggplot(pdp_data, aes(x = .data[[xvar]], y = yhat)) +
+      geom_col(fill = "steelblue") +
+      theme_bw() +
+      theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+      labs(y = "Predicted Probability (Higher Risk)")
+  } else {
+    p1 <- ggplot(pdp_data, aes(x = .data[[xvar]], y = yhat)) +
+      geom_line(color = "blue") +
+      theme_bw() +
+      labs(y = "Predicted Probability (Higher Risk)")
+  }
+  return(p1)  
+}
+
+# Saving individual plots
+cat("\nGuardando plots individuales...\n")
+
+for(var in names(all_pdpwt)){  
+  pdp_datawt <- all_pdpwt[[var]]
+  
+  folder <- ifelse(is.factor(pdp_datawt[[var]]) || is.character(pdp_datawt[[var]]),
+                   "Categoricalwt", "Continuouswt")  # ← CAMBIO: añadido wt
+  
+  p1 <- plot_pdpwt(pdp_datawt, var)  # ← CAMBIO: usar plot_pdpwt y p1
+  
+  ggsave(filename = paste0("~/extinction/PDP_Plotswt_crossv/", folder, "/", var, ".png"),
+         plot = p1, width = 6, height = 4)  # ← CAMBIO: era p, debe ser p1
+}
+
+# COMBINED PANEL - TOP 10 VARIABLES WITH THREATS
+
+# Top 10 variables 
+top_10_varswt <- c("Agriculture", "Hunting", "Range_size", "Invasive_species", 
+                   "Climate_change", "Maximum_latitude", "Elevational_range", 
+                   "Minimum_latitude", "Generation_length", "Adult_survival_annual")
+
+# plots list for panel
+plot_list_top10wt <- list()
+
+for(i in seq_along(top_10_varswt)){
+  var <- top_10_varswt[i]
+  
+  if(!var %in% names(all_pdpwt)){
+    warning(paste("Variable", var, "no encontrada en all_pdpwt"))
+    next
+  }
+  
+  pdp_datawt <- all_pdpwt[[var]]
+  
+  show_y_label <- (i %% 2 == 1)
+  
+  # categorical?
+  is_categorical <- is.factor(pdp_datawt[[var]]) || is.character(pdp_datawt[[var]])
+  
+  # optimized plot for panel
+  if(is_categorical){
+    # categorical variables Plot
+    p1 <- ggplot(pdp_datawt, aes(x = .data[[var]], y = yhat)) +
+      geom_col(fill = "gray50", width = 0.7) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 8, angle = 45, hjust = 1),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 9, face = "bold", margin = margin(t = 5)),
+        axis.title.y = if(show_y_label) element_text(size = 9, face = "bold", margin = margin(r = 5)) else element_blank(),
+        plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "gray90"),
+        plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm")
+      ) +
+      labs(x = gsub("_", " ", var), 
+           y = if(show_y_label) "Higher extinction risk" else "") +
+      ylim(0, 0.7)
+  } else {
+    # plot for continuous variables 
+    p1 <- ggplot(pdp_datawt, aes(x = .data[[var]], y = yhat)) +
+      geom_ribbon(aes(ymin = 0, ymax = yhat), 
+                  fill = "gray70", alpha = 0.5) +
+      geom_line(color = "black", size = 1) +
+      theme_bw() +
+      theme(
+        axis.text.x = element_text(size = 8, angle = 0),
+        axis.text.y = element_text(size = 8),
+        axis.title.x = element_text(size = 9, face = "bold", margin = margin(t = 5)),
+        axis.title.y = if(show_y_label) element_text(size = 9, face = "bold", margin = margin(r = 5)) else element_blank(),
+        plot.title = element_text(size = 10, face = "bold", hjust = 0.5),
+        panel.grid.minor = element_blank(),
+        panel.grid.major = element_line(color = "gray90"),
+        plot.margin = unit(c(0.2, 0.2, 0.2, 0.2), "cm")
+      ) +
+      labs(x = gsub("_", " ", var), 
+           y = if(show_y_label) "Higher extinction risk" else "") +
+      ylim(0, 0.7)
+  }
+  
+  plot_list_top10wt[[var]] <- p1
+  cat("  ✓", var, "añadido al panel\n")
+}
+
+# Combining plots in 2x5 panel
+final_plotwt <- plot_grid(
+  plotlist = plot_list_top10wt,
+  ncol = 2,
+  nrow = 5,
+  labels = "AUTO",
+  label_size = 11,
+  align = "hv"
+)
+
+ggsave("~/extinction/PDP_Plotswt_crossv/PDP_Combined_Top10wt_crossv.png", 
+       plot = final_plotwt, 
+       width = 7,  
+       height = 10, 
+       dpi = 300)
+```
