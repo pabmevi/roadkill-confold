@@ -213,4 +213,3 @@ runs/
 examples/
 saved_models/
 lightning_logs/
-folds.csv
