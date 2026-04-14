@@ -94,7 +94,7 @@ def final_extinctionrisk_noth_dataframe(data_path='datasets/Extinction/traits_co
     return model, data
 
 
-def rk_mammals(data_path='datasets/Extinction/RkTraits_CONFOLD_clean.csv'):
+def rk_mammals(data_path='datasets/Extinction/RkTraits_CONFOLD.csv'):
     attrs = ["decimalLatitude","decimalLongitude","Order","adult_mass_g","max_longevity_d",
              "age_first_reproduction_d","litter_size_n","litters_per_year_n","dispersal_km",
              "density_n_km2","home_range_km2","dphy_invertebrate","dphy_plant","det_vend",
